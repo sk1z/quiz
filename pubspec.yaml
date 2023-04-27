@@ -46,7 +46,6 @@ dependencies:
   connectivity_plus: ^3.0.5
   device_info_plus: ^8.2.1
   firebase_core: ^1.21.1
-  firebase_core_platform_interface: ^4.6.0
   firebase_remote_config: ^2.0.16
   firebase_analytics: ^9.3.8
 

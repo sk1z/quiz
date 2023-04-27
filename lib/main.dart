@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -16,8 +17,8 @@ Future<void> main() async {
   );
   final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
   await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    fetchTimeout: const Duration(minutes: 1),
-    minimumFetchInterval: const Duration(hours: 1),
+    fetchTimeout: const Duration(seconds: 1),
+    minimumFetchInterval: const Duration(seconds: 1),
   ));
 
   final bool isEmu = await checkIsEmu();
@@ -48,11 +49,13 @@ Future<void> main() async {
 
 Future<String> getUrl(FirebaseRemoteConfig remoteConfig) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? url = prefs.getString('url1');
+  String? url = prefs.getString('url');
 
   if (url == null) {
     url = remoteConfig.getString('url');
-    prefs.setString('url', url);
+    if (url != '') {
+      prefs.setString('url', url);
+    }
   }
 
   return url;
