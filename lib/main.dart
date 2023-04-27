@@ -25,18 +25,16 @@ Future<void> main() async {
   bool internetConnection = true;
   String? url;
 
-  if (!isEmu) {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    final int connectivityIndex = connectivityResult.index;
-    if (connectivityIndex == 4) {
+  final connectivityResult = await (Connectivity().checkConnectivity());
+  final int connectivityIndex = connectivityResult.index;
+  if (connectivityIndex == 4) {
+    internetConnection = false;
+  } else {
+    try {
+      await remoteConfig.fetchAndActivate();
+      url = await getUrl(remoteConfig);
+    } catch (_) {
       internetConnection = false;
-    } else {
-      try {
-        await remoteConfig.fetchAndActivate();
-        url = await getUrl(remoteConfig);
-      } catch (_) {
-        internetConnection = false;
-      }
     }
   }
 
@@ -44,6 +42,7 @@ Future<void> main() async {
     internetConnection: internetConnection,
     url: url,
     remoteConfig: remoteConfig,
+    isEmu: isEmu,
   ));
 }
 

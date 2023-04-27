@@ -12,11 +12,13 @@ class App extends StatelessWidget {
     required this.internetConnection,
     this.url,
     required this.remoteConfig,
+    required this.isEmu,
   });
 
   final bool internetConnection;
   final String? url;
   final FirebaseRemoteConfig remoteConfig;
+  final bool isEmu;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,7 @@ class App extends StatelessWidget {
           builder: (BuildContext context, AppState state) {
             if (!state.internetConnection) {
               return const NoConnectionPage();
-            } else if (state.url == null || state.url == '') {
+            } else if (state.url == null || state.url == '' || isEmu) {
               return Quiz();
             }
 
