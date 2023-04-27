@@ -16,7 +16,7 @@ class ResultPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Correct answers: ${state.correctAnswerCount} / ${quiz.length}',
+                'Correct answers: ${state.correctAnswerCount} / ${state.stages.length}',
               ),
               const SizedBox(height: 12),
               ElevatedButton(
