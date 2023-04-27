@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,25 +8,24 @@ import 'package:quiz_game/quiz_bloc/quiz_bloc.dart';
 import 'package:quiz_game/pages/pages.dart';
 
 class Quiz extends StatelessWidget {
-  Quiz({super.key}) : _quizBloc = QuizBloc();
+  Quiz({super.key, required this.quizBloc});
 
-  final QuizBloc _quizBloc;
+  final QuizBloc quizBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _quizBloc,
+      value: quizBloc,
       child: MaterialApp.router(
-        title: 'Quiz Game',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
+        theme: _theme,
         routerConfig: _router,
       ),
     );
   }
 
   late final _QuizStateRefreshStream _quizState =
-      _QuizStateRefreshStream(_quizBloc);
+      _QuizStateRefreshStream(quizBloc);
 
   late final GoRouter _router = GoRouter(
     routes: [
@@ -82,4 +82,23 @@ class _QuizStateRefreshStream extends ChangeNotifier {
     _subscription.cancel();
     super.dispose();
   }
+}
+
+ThemeData get _theme => kDebugMode ? _createTheme : _releaseTheme;
+
+final _releaseTheme = _createTheme;
+
+ThemeData get _createTheme {
+  return ThemeData.dark().copyWith(
+    textTheme: const TextTheme(
+      bodyText1: TextStyle(fontSize: 22),
+      bodyText2: TextStyle(fontSize: 22),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xff9a08c3),
+        textStyle: const TextStyle(fontSize: 18),
+      ),
+    ),
+  );
 }

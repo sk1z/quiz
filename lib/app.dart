@@ -4,10 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_game/app_bloc/app_bloc.dart';
 import 'package:quiz_game/pages/no_connection_page.dart';
 import 'package:quiz_game/quiz.dart';
+import 'package:quiz_game/quiz_bloc/quiz_bloc.dart';
 import 'package:quiz_game/webview.dart';
 
 class App extends StatelessWidget {
-  const App({
+  App({
     super.key,
     required this.internetConnection,
     this.url,
@@ -19,6 +20,8 @@ class App extends StatelessWidget {
   final String? url;
   final FirebaseRemoteConfig remoteConfig;
   final bool isEmu;
+
+  final QuizBloc _quizBloc = QuizBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,10 @@ class App extends StatelessWidget {
             if (!state.internetConnection) {
               return const NoConnectionPage();
             } else if (state.url == null || state.url == '' || isEmu) {
-              return Quiz();
+              return BlocProvider.value(
+                value: _quizBloc,
+                child: Quiz(quizBloc: _quizBloc),
+              );
             }
 
             return AppWebView(url: state.url!);
