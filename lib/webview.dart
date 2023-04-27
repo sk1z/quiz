@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class WebView extends StatefulWidget {
-  const WebView({super.key, required this.url});
+class AppWebView extends StatefulWidget {
+  const AppWebView({super.key, required this.url});
 
   final String url;
 
   @override
-  State<WebView> createState() => _WebViewState();
+  State<AppWebView> createState() => _AppWebViewState();
 }
 
-class _WebViewState extends State<WebView> {
+class _AppWebViewState extends State<AppWebView> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
@@ -27,6 +27,7 @@ class _WebViewState extends State<WebView> {
 
   late PullToRefreshController pullToRefreshController;
   String url = '';
+  final urlController = TextEditingController();
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _WebViewState extends State<WebView> {
       onLoadStart: (InAppWebViewController controller, Uri? url) {
         setState(() {
           this.url = url.toString();
+          urlController.text = this.url;
         });
       },
       androidOnPermissionRequest: (
@@ -85,6 +87,7 @@ class _WebViewState extends State<WebView> {
         pullToRefreshController.endRefreshing();
         setState(() {
           this.url = url.toString();
+          urlController.text = this.url;
         });
       },
       onLoadError: (
@@ -99,6 +102,9 @@ class _WebViewState extends State<WebView> {
         if (progress == 100) {
           pullToRefreshController.endRefreshing();
         }
+        setState(() {
+          urlController.text = url;
+        });
       },
       onUpdateVisitedHistory: (
         InAppWebViewController controller,
@@ -107,6 +113,7 @@ class _WebViewState extends State<WebView> {
       ) {
         setState(() {
           this.url = url.toString();
+          urlController.text = this.url;
         });
       },
     );
@@ -116,7 +123,27 @@ class _WebViewState extends State<WebView> {
         webViewController?.goBack();
         return false;
       },
-      child: SafeArea(child: webview),
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              TextField(
+                decoration: const InputDecoration(prefixIcon: Icon(Icons.search)),
+                controller: urlController,
+                keyboardType: TextInputType.url,
+                onSubmitted: (String value) {
+                  Uri url = Uri.parse(value);
+                  if (url.scheme.isEmpty) {
+                    url = Uri.parse('https://www.google.com/search?q=$value');
+                  }
+                  webViewController?.loadUrl(urlRequest: URLRequest(url: url));
+                },
+              ),
+              Expanded(child: webview),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

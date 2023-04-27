@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:quiz_game/app.dart';
-import 'package:quiz_game/webview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -13,28 +13,43 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final remoteConfig = FirebaseRemoteConfig.instance;
+  final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
   await remoteConfig.setConfigSettings(RemoteConfigSettings(
     fetchTimeout: const Duration(minutes: 1),
     minimumFetchInterval: const Duration(hours: 1),
   ));
-  await remoteConfig.fetchAndActivate();
 
+  bool internetConnection = true;
+  String? url;
+
+  final connectivityResult = await (Connectivity().checkConnectivity());
+  final int connectivityIndex = connectivityResult.index;
+  if (connectivityIndex == 4) {
+    internetConnection = false;
+  } else {
+    try {
+      await remoteConfig.fetchAndActivate();
+      url = await getUrl(remoteConfig);
+    } catch (_) {
+      internetConnection = false;
+    }
+  }
+
+  runApp(App(
+    internetConnection: internetConnection,
+    url: url,
+    remoteConfig: remoteConfig,
+  ));
+}
+
+Future<String> getUrl(FirebaseRemoteConfig remoteConfig) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? url = prefs.getString('url');
+  String? url = prefs.getString('url1');
+
   if (url == null) {
     url = remoteConfig.getString('url');
     prefs.setString('url', url);
   }
-  // if (url == '') {
-  //   runApp(App());
-  // } else {
-  //   runApp(App());
-  // }
 
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData.dark(),
-    home: const WebView(url: 'https://google.com'),
-  ));
+  return url;
 }

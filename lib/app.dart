@@ -1,85 +1,43 @@
-import 'dart:async';
-
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:quiz_game/bloc/quiz_bloc.dart';
-import 'package:quiz_game/pages/pages.dart';
+import 'package:quiz_game/app_bloc/app_bloc.dart';
+import 'package:quiz_game/pages/no_connection_page.dart';
+import 'package:quiz_game/quiz.dart';
+import 'package:quiz_game/webview.dart';
 
 class App extends StatelessWidget {
-  App({super.key}) : _quizBloc = QuizBloc();
+  const App({
+    super.key,
+    required this.internetConnection,
+    this.url,
+    required this.remoteConfig,
+  });
 
-  final QuizBloc _quizBloc;
+  final bool internetConnection;
+  final String? url;
+  final FirebaseRemoteConfig remoteConfig;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _quizBloc,
-      child: MaterialApp.router(
-        title: 'Quiz Game',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
-        routerConfig: _router,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      home: BlocProvider(
+        create: (_) => AppBloc(
+            internetConnection: internetConnection, url:url,remoteConfig: remoteConfig),
+        child: BlocBuilder<AppBloc, AppState>(
+          builder: (BuildContext context, AppState state) {
+            if (!state.internetConnection) {
+              return const NoConnectionPage();
+            } else if (state.url == null || state.url == '') {
+              return Quiz();
+            }
+
+            return AppWebView(url: state.url!);
+          },
+        ),
       ),
     );
-  }
-
-  late final _QuizStateRefreshStream _quizState =
-      _QuizStateRefreshStream(_quizBloc);
-
-  late final GoRouter _router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (BuildContext context, GoRouterState state) {
-          return const HomePage();
-        },
-      ),
-      GoRoute(
-        path: '/stage/:stage',
-        builder: (BuildContext context, GoRouterState state) {
-          return StagePage(stage: int.parse(state.params['stage']!));
-        },
-      ),
-      GoRoute(
-        path: '/result',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ResultPage();
-        },
-      ),
-    ],
-    redirect: (BuildContext context, GoRouterState state) {
-      final int stage = _quizState.state.stage;
-      if (stage == -1) {
-        return '/';
-      } else if (stage > -1) {
-        return '/stage/$stage';
-      } else if (stage == -2) {
-        return '/result';
-      }
-    },
-    refreshListenable: _quizState,
-  );
-}
-
-class _QuizStateRefreshStream extends ChangeNotifier {
-  _QuizStateRefreshStream(QuizBloc bloc) : _state = bloc.state {
-    _subscription = bloc.stream.asBroadcastStream().listen((state) {
-      if (state != _state) {
-        _state = state;
-        notifyListeners();
-      }
-    });
-  }
-
-  late final StreamSubscription<QuizState> _subscription;
-
-  QuizState _state;
-  QuizState get state => _state;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
   }
 }
