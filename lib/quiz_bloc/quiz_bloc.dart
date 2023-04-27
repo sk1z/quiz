@@ -25,7 +25,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     for (int i = 0; i < 5; i++) {
       final int number = random.nextInt(numbers.length);
       stages.add(quiz[numbers[number]]);
-      numbers.removeAt(random.nextInt(stages.length));
+      numbers.removeAt(number);
     }
 
     _timer?.cancel();
