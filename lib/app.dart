@@ -25,7 +25,9 @@ class App extends StatelessWidget {
       theme: ThemeData.dark(),
       home: BlocProvider(
         create: (_) => AppBloc(
-            internetConnection: internetConnection, url:url,remoteConfig: remoteConfig),
+            internetConnection: internetConnection,
+            url: url,
+            remoteConfig: remoteConfig),
         child: BlocBuilder<AppBloc, AppState>(
           builder: (BuildContext context, AppState state) {
             if (!state.internetConnection) {
