@@ -1,4 +1,4 @@
-package com.example.quiz_game
+package hillowgames.licu
 
 import io.flutter.embedding.android.FlutterActivity
 
