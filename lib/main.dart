@@ -31,7 +31,6 @@ Future<void> main() async {
     internetConnection = false;
   } else {
     try {
-      await remoteConfig.fetchAndActivate();
       url = await getUrl(remoteConfig);
     } catch (_) {
       internetConnection = false;
@@ -51,6 +50,7 @@ Future<String> getUrl(FirebaseRemoteConfig remoteConfig) async {
   String? url = prefs.getString('url');
 
   if (url == null) {
+    await remoteConfig.fetchAndActivate();
     url = remoteConfig.getString('url');
     if (url != '') {
       prefs.setString('url', url);
