@@ -16,20 +16,13 @@ class ResultPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Correct answers: ${state.correctAnswerCount} / ${state.stages.length}',
+                'Correct answers: ${state.score} / ${state.stages.length}',
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 36),
               ElevatedButton(
                 child: const Text('Start New Game'),
                 onPressed: () {
                   context.read<QuizBloc>().add(StartGamePressed());
-                },
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                child: const Text('Back to main menu'),
-                onPressed: () {
-                  context.read<QuizBloc>().add(MainMenuPressed());
                 },
               ),
             ],

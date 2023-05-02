@@ -16,7 +16,7 @@ Future<void> main() async {
   );
   final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
   await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    fetchTimeout: const Duration(seconds: 1),
+    fetchTimeout: const Duration(minutes: 1),
     minimumFetchInterval: const Duration(seconds: 1),
   ));
 
@@ -48,6 +48,7 @@ Future<void> main() async {
 Future<String> getUrl(FirebaseRemoteConfig remoteConfig) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   String? url = prefs.getString('url');
+  url = null;
 
   if (url == null) {
     await remoteConfig.fetchAndActivate();

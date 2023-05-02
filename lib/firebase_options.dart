@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAk1E7UfibwroUx_sBhkzbNAywCM42C2Rg',
-    appId: '1:617413264464:android:6d55163fc4aa2078ce3d55',
+    appId: '1:617413264464:android:f464282afa5d43bece3d55',
     messagingSenderId: '617413264464',
     projectId: 'quiz-game-f4c50',
     storageBucket: 'quiz-game-f4c50.appspot.com',

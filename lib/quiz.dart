@@ -49,24 +49,23 @@ class Quiz extends StatelessWidget {
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final int stage = _quizState.state.stage;
+      final int stage = _quizState.stage;
       if (stage == -1) {
         return '/';
       } else if (stage > -1) {
         return '/stage/$stage';
-      } else if (stage == -2) {
-        return '/result';
       }
+      return '/result';
     },
     refreshListenable: _quizState,
   );
 }
 
 class _QuizStateRefreshStream extends ChangeNotifier {
-  _QuizStateRefreshStream(QuizBloc bloc) : _state = bloc.state {
+  _QuizStateRefreshStream(QuizBloc bloc) : _stage = bloc.state.stage {
     _subscription = bloc.stream.asBroadcastStream().listen((state) {
-      if (state != _state) {
-        _state = state;
+      if (stage != state.stage) {
+        _stage = state.stage;
         notifyListeners();
       }
     });
@@ -74,8 +73,8 @@ class _QuizStateRefreshStream extends ChangeNotifier {
 
   late final StreamSubscription<QuizState> _subscription;
 
-  QuizState _state;
-  QuizState get state => _state;
+  int _stage;
+  int get stage => _stage;
 
   @override
   void dispose() {
@@ -90,15 +89,10 @@ final _releaseTheme = _createTheme;
 
 ThemeData get _createTheme {
   return ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: const Color(0xff55b993),
     textTheme: const TextTheme(
-      bodyText1: TextStyle(fontSize: 22),
-      bodyText2: TextStyle(fontSize: 22),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xff9a08c3),
-        textStyle: const TextStyle(fontSize: 18),
-      ),
+      bodyLarge: TextStyle(fontSize: 21),
+      bodyMedium: TextStyle(fontSize: 21),
     ),
   );
 }

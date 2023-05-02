@@ -21,3 +21,5 @@ class AnswerSelected extends QuizEvent {
 class TimeChanged extends QuizEvent {}
 
 class MainMenuPressed extends QuizEvent {}
+
+class ChangeShowingAnswers extends QuizEvent {}

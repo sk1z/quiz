@@ -3,9 +3,13 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:quiz_game/quiz_questions.dart';
 
 part 'quiz_event.dart';
 part 'quiz_state.dart';
+
+const int _questionCount = 20;
+const int _answerTime = 10;
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   QuizBloc() : super(const QuizState()) {
@@ -13,6 +17,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     on<AnswerSelected>(_onAnswerSelected);
     on<TimeChanged>(_timeChanged);
     on<MainMenuPressed>(_mainMenuPressed);
+    on<ChangeShowingAnswers>(_changeShowingAnswers);
   }
 
   Timer? _timer;
@@ -22,19 +27,17 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     final List<Stage> stages = [];
 
     final Random random = Random();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < _questionCount; i++) {
       final int number = random.nextInt(numbers.length);
       stages.add(quiz[numbers[number]]);
       numbers.removeAt(number);
     }
 
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-      add(TimeChanged());
-    });
+    _setTimer();
+
     emit(QuizState(
       stage: 0,
-      timeLeft: stages.length * 15,
+      timeLeft: _answerTime,
       stages: stages,
     ));
   }
@@ -42,16 +45,20 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   void _onAnswerSelected(AnswerSelected event, Emitter<QuizState> emit) {
     final int answer = event.answer;
 
-    int correctAnswerCount = state.correctAnswerCount;
+    int correctAnswerCount = state.score;
+    int health = state.health;
 
     if (answer == state.stages[state.stage].answer) {
-      correctAnswerCount++;
+      correctAnswerCount += 100;
+    } else {
+      health--;
     }
 
     int stage = state.stage;
 
-    if (stage < state.stages.length - 1) {
+    if (stage < state.stages.length - 1 && health >= 0) {
       stage++;
+      _setTimer();
     } else {
       _timer?.cancel();
       stage = -2;
@@ -59,7 +66,9 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     emit(state.copyWith(
       stage: stage,
-      correctAnswerCount: correctAnswerCount,
+      score: correctAnswerCount,
+      health: health,
+      timeLeft: _answerTime,
     ));
   }
 
@@ -70,12 +79,41 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
       emit(state.copyWith(timeLeft: timeLeft));
     } else {
       _timer?.cancel();
-      emit(state.copyWith(stage: -2));
+
+      int health = state.health;
+      health--;
+
+      int stage = state.stage;
+
+      int? timeLeft;
+
+      if (stage < state.stages.length - 1 && health >= 0) {
+        stage++;
+        timeLeft = _answerTime;
+        _setTimer();
+      } else {
+        _timer?.cancel();
+        stage = -2;
+      }
+
+      emit(state.copyWith(stage: stage, health: health, timeLeft: timeLeft));
     }
   }
 
   void _mainMenuPressed(MainMenuPressed event, Emitter<QuizState> emit) {
-    emit(state.copyWith(stage: -1, correctAnswerCount: 0));
+    emit(state.copyWith(stage: -1, score: 0));
+  }
+
+  void _changeShowingAnswers(
+      ChangeShowingAnswers event, Emitter<QuizState> emit) {
+    emit(state.copyWith(answersShown: !state.answersShown));
+  }
+
+  void _setTimer() {
+    _timer?.cancel();
+    // _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+    //   add(TimeChanged());
+    // });
   }
 
   @override
@@ -85,113 +123,17 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   }
 }
 
-const List<Stage> quiz = [
-  Stage(
-    question: 'Which Country won the most FIFA World Cups? (3)',
-    answers: [
-      Answer(1, 'Germany'),
-      Answer(2, 'Argentina'),
-      Answer(3, 'Brazil'),
-      Answer(4, 'France'),
-    ],
-    answer: 3,
-  ),
-  Stage(
-    question: 'Which Country won the first FIFA World Cup? (2)',
-    answers: [
-      Answer(1, 'Argentina'),
-      Answer(2, 'Uruguay'),
-      Answer(3, 'Italy'),
-      Answer(4, 'Brazil'),
-    ],
-    answer: 2,
-  ),
-  Stage(
-    question: 'Who is known as the Flying Sikh? (3)',
-    answers: [
-      Answer(1, 'Michael Johnson'),
-      Answer(2, 'Usain Bolt'),
-      Answer(3, 'Milkha Sing'),
-      Answer(4, 'Carl Lewis'),
-    ],
-    answer: 3,
-  ),
-  Stage(
-    question: 'Who is known as “The Baltimore Bullet”? (3)',
-    answers: [
-      Answer(1, 'Roger Federer'),
-      Answer(2, 'Usain Bolt'),
-      Answer(3, 'Michael Phelps'),
-      Answer(4, 'Michael Jordan'),
-    ],
-    answer: 3,
-  ),
-  Stage(
-    question: 'Where is Magnus Carlsen from? (3)',
-    answers: [
-      Answer(1, 'England'),
-      Answer(2, 'UK'),
-      Answer(3, 'Norway'),
-      Answer(4, 'Germany'),
-    ],
-    answer: 3,
-  ),
-  Stage(
-    question: 'Where did Snooker Game Originate from? (3)',
-    answers: [
-      Answer(1, 'Austria'),
-      Answer(2, 'England'),
-      Answer(3, 'India'),
-      Answer(4, 'Wales'),
-    ],
-    answer: 3,
-  ),
-  Stage(
-    question: 'Which was the first Sport played on the Moon? (1)',
-    answers: [
-      Answer(1, 'Golf'),
-      Answer(2, 'Tennis'),
-      Answer(3, 'Badminton'),
-      Answer(4, 'Archery'),
-    ],
-    answer: 1,
-  ),
-  Stage(
-    question: 'Where was the first Commonwealth Games held? (1)',
-    answers: [
-      Answer(1, 'Canada'),
-      Answer(2, 'USA'),
-      Answer(3, 'Mexico'),
-      Answer(4, 'Chile'),
-    ],
-    answer: 1,
-  ),
-  Stage(
-    question: 'Which Sport has the Term “Butterfly Stroke”? (3)',
-    answers: [
-      Answer(1, 'Table Tennis'),
-      Answer(2, 'Boating'),
-      Answer(3, 'Swiming'),
-      Answer(4, 'MotoGP'),
-    ],
-    answer: 3,
-  ),
-  Stage(
-    question: 'When did Michael Jordan retire? (2)',
-    answers: [
-      Answer(1, '2004'),
-      Answer(2, '2003'),
-      Answer(3, '2005'),
-      Answer(4, '2013'),
-    ],
-    answer: 2,
-  ),
-];
+enum StageType { text, image }
 
 class Stage {
-  const Stage(
-      {required this.question, required this.answers, required this.answer});
+  const Stage({
+    this.type = StageType.text,
+    required this.question,
+    required this.answers,
+    required this.answer,
+  });
 
+  final StageType type;
   final String question;
   final List<Answer> answers;
   final int answer;

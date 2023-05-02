@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -23,7 +22,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _connectivitySubscription = Connectivity()
           .onConnectivityChanged
           .listen((ConnectivityResult result) {
-        log(result.toString());
         if (result.index != 4) {
           add(ConnectionEstablished());
         }

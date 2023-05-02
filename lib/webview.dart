@@ -127,18 +127,19 @@ class _AppWebViewState extends State<AppWebView> {
         body: SafeArea(
           child: Column(
             children: [
-              TextField(
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.search)),
-                controller: urlController,
-                keyboardType: TextInputType.url,
-                onSubmitted: (String value) {
-                  Uri url = Uri.parse(value);
-                  if (url.scheme.isEmpty) {
-                    url = Uri.parse('https://www.google.com/search?q=$value');
-                  }
-                  webViewController?.loadUrl(urlRequest: URLRequest(url: url));
-                },
-              ),
+              // TextField(
+              //   decoration:
+              //       const InputDecoration(prefixIcon: Icon(Icons.search)),
+              //   controller: urlController,
+              //   keyboardType: TextInputType.url,
+              //   onSubmitted: (String value) {
+              //     Uri url = Uri.parse(value);
+              //     if (url.scheme.isEmpty) {
+              //       url = Uri.parse('https://www.google.com/search?q=$value');
+              //     }
+              //     webViewController?.loadUrl(urlRequest: URLRequest(url: url));
+              //   },
+              // ),
               Expanded(child: webview),
             ],
           ),
