@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_game/quiz_bloc/quiz_bloc.dart';
+import 'package:quiz_game/quiz/quiz.dart';
 
-class ResultPage extends StatelessWidget {
-  const ResultPage({super.key});
+class QuizResultPage extends StatelessWidget {
+  const QuizResultPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +15,23 @@ class ResultPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Correct answers: ${state.score} / ${state.stages.length}',
-              ),
+              Score(text: 'SCORE'),
+              Score(text: '${state.score}'),
               const SizedBox(height: 36),
               ElevatedButton(
-                child: const Text('Start New Game'),
                 onPressed: () {
                   context.read<QuizBloc>().add(StartGamePressed());
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xffd028dc),
+                ),
+                child: const Text(
+                  'Start new game',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ],
           ),

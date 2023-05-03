@@ -1,11 +1,10 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_game/app_bloc/app_bloc.dart';
-import 'package:quiz_game/pages/no_connection_page.dart';
-import 'package:quiz_game/quiz.dart';
-import 'package:quiz_game/quiz_bloc/quiz_bloc.dart';
-import 'package:quiz_game/webview.dart';
+import 'package:quiz_game/app/app.dart';
+import 'package:quiz_game/no_connection/view/no_connection_page.dart';
+import 'package:quiz_game/quiz/quiz.dart';
+import 'package:quiz_game/webview/view/webview_page.dart';
 
 class App extends StatelessWidget {
   App({
@@ -44,7 +43,7 @@ class App extends StatelessWidget {
               );
             }
 
-            return AppWebView(url: state.url!);
+            return WebViewPage(url: state.url!);
           },
         ),
       ),

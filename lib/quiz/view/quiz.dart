@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quiz_game/quiz_bloc/quiz_bloc.dart';
-import 'package:quiz_game/pages/pages.dart';
+import 'package:quiz_game/quiz/quiz.dart';
 
 class Quiz extends StatelessWidget {
   Quiz({super.key, required this.quizBloc});
@@ -18,7 +16,7 @@ class Quiz extends StatelessWidget {
       value: quizBloc,
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        theme: _theme,
+        theme: theme,
         routerConfig: _router,
       ),
     );
@@ -32,28 +30,34 @@ class Quiz extends StatelessWidget {
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return const HomePage();
+          return const QuizStartPage();
         },
       ),
       GoRoute(
-        path: '/stage/:stage',
+        path: '/question/:question_number',
         builder: (BuildContext context, GoRouterState state) {
-          return StagePage(stage: int.parse(state.params['stage']!));
+          return QuizQuestionPage(
+            questionNumber: int.parse(state.params['question_number']!),
+            score: int.parse(state.queryParams['score']!),
+            health: int.parse(state.queryParams['health']!),
+          );
         },
       ),
       GoRoute(
         path: '/result',
         builder: (BuildContext context, GoRouterState state) {
-          return const ResultPage();
+          return const QuizResultPage();
         },
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final int stage = _quizState.stage;
-      if (stage == -1) {
+      final QuizState state = _quizState.state;
+      final int questionNumber = state.questionNumber;
+      if (questionNumber == -1) {
         return '/';
-      } else if (stage > -1) {
-        return '/stage/$stage';
+      } else if (questionNumber > -1) {
+        return '/question/${state.questions[questionNumber]}'
+            '?score=${state.score}&health=${state.health}';
       }
       return '/result';
     },
@@ -62,10 +66,10 @@ class Quiz extends StatelessWidget {
 }
 
 class _QuizStateRefreshStream extends ChangeNotifier {
-  _QuizStateRefreshStream(QuizBloc bloc) : _stage = bloc.state.stage {
+  _QuizStateRefreshStream(QuizBloc bloc) : _state = bloc.state {
     _subscription = bloc.stream.asBroadcastStream().listen((state) {
-      if (stage != state.stage) {
-        _stage = state.stage;
+      if (state.questionNumber != _state.questionNumber) {
+        _state = state;
         notifyListeners();
       }
     });
@@ -73,26 +77,12 @@ class _QuizStateRefreshStream extends ChangeNotifier {
 
   late final StreamSubscription<QuizState> _subscription;
 
-  int _stage;
-  int get stage => _stage;
+  QuizState _state;
+  QuizState get state => _state;
 
   @override
   void dispose() {
     _subscription.cancel();
     super.dispose();
   }
-}
-
-ThemeData get _theme => kDebugMode ? _createTheme : _releaseTheme;
-
-final _releaseTheme = _createTheme;
-
-ThemeData get _createTheme {
-  return ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: const Color(0xff55b993),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(fontSize: 21),
-      bodyMedium: TextStyle(fontSize: 21),
-    ),
-  );
 }

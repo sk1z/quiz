@@ -1,7 +1,7 @@
-import 'package:quiz_game/quiz_bloc/quiz_bloc.dart';
+import 'package:quiz_game/quiz/models/models.dart';
 
-const List<Stage> quiz = [
-  Stage(
+const List<Question> quizQuestions = [
+  Question(
     question: 'Who scored the fastest penta-trick (9 minutes)?',
     answers: [
       Answer(1, 'Lionel Messi'),
@@ -11,7 +11,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Longest scoring streak in England (11 games)?',
     answers: [
       Answer(1, 'Sergio Aguero'),
@@ -22,8 +22,8 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: "Who hasn't received the Ballon d'Or?",
     answers: [
       Answer(1, 'ballon/1.jpg'),
@@ -33,7 +33,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question:
         'The player who has changed the most clubs in his career (46 clubs)?',
     answers: [
@@ -44,8 +44,8 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Which one is Adebayo Akinfenwa?',
     answers: [
       Answer(1, 'adebayo/1.jpg'),
@@ -55,7 +55,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'What confederation does the Jamaica team play in?',
     answers: [
       Answer(1, 'CAF'),
@@ -66,7 +66,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'Which player received the first green card in football history?',
     answers: [
       Answer(1, 'Benedetti Simone'),
@@ -76,7 +76,7 @@ const List<Stage> quiz = [
     ],
     answer: 4,
   ),
-  Stage(
+  Question(
     question: 'Who scored the goal that was called the "Hand of God"?',
     answers: [
       Answer(1, 'Pele'),
@@ -86,8 +86,8 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Official ball of the 1990 World Cup in France - Tricolore',
     answers: [
       Answer(1, 'tricolore/1.jpg'),
@@ -97,7 +97,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: "Iran's top scorer?",
     answers: [
       Answer(1, 'Ruzbe Cheshmi'),
@@ -108,7 +108,7 @@ const List<Stage> quiz = [
     ],
     answer: 4,
   ),
-  Stage(
+  Question(
     question: 'Which of these players is the defender?',
     answers: [
       Answer(1, 'Jan Vennegoor of Hesselink'),
@@ -119,7 +119,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question:
         'Which team played the selection for the 2002 World Cup in tank tops?',
     answers: [
@@ -130,7 +130,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'Which country team was able to defend the world title?',
     answers: [
       Answer(1, 'Spain'),
@@ -141,7 +141,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'Which Italian team is called the Bianconeri?',
     answers: [
       Answer(1, 'Inter'),
@@ -151,7 +151,7 @@ const List<Stage> quiz = [
     ],
     answer: 4,
   ),
-  Stage(
+  Question(
     question: 'Which team has never won the Champions League?',
     answers: [
       Answer(1, 'Aston Villa'),
@@ -162,8 +162,8 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Emblem of Valladolid',
     answers: [
       Answer(1, 'valladolid/1.gif'),
@@ -174,8 +174,8 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Which one is Paul Pogba?',
     answers: [
       Answer(1, 'pogba/1.png'),
@@ -186,7 +186,7 @@ const List<Stage> quiz = [
     ],
     answer: 4,
   ),
-  Stage(
+  Question(
     question: 'Winner of the 1960 European Championship?',
     answers: [
       Answer(1, 'USSR'),
@@ -196,8 +196,8 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Which of them is Vasily Berezutsky?',
     answers: [
       Answer(1, 'berezutsky/1.png'),
@@ -205,8 +205,8 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Which one is Kylian Azar?',
     answers: [
       Answer(1, 'azar/1.png'),
@@ -215,7 +215,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'The only player to score a hat-trick in a World Cup final?',
     answers: [
       Answer(1, 'Alfredo Di Stefano'),
@@ -225,7 +225,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'The Brazilian who has played in three World Cup finals?',
     answers: [
       Answer(1, 'Pele'),
@@ -235,8 +235,8 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Whose fans proudly call themselves Scousers?',
     answers: [
       Answer(1, 'scousers/1.gif'),
@@ -246,7 +246,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Which of these national football teams does not exist?',
     answers: [
       Answer(1, 'Macedonia'),
@@ -257,8 +257,8 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
-    type: StageType.image,
+  Question(
+    type: QuestionType.image,
     question: 'Which one is Xavi?',
     answers: [
       Answer(1, 'xavi/1.png'),
@@ -268,7 +268,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question:
         'Who was the first player to receive the golden ball three times in a row?',
     answers: [
@@ -280,7 +280,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Who won the Champions League 2009/2010?',
     answers: [
       Answer(1, 'Inter'),
@@ -290,7 +290,7 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
+  Question(
     question: 'Which Country won the most FIFA World Cups?',
     answers: [
       Answer(1, 'Germany'),
@@ -300,7 +300,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Which Country won the first FIFA World Cup?',
     answers: [
       Answer(1, 'Argentina'),
@@ -310,7 +310,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'Who is known as the Flying Sikh?',
     answers: [
       Answer(1, 'Michael Johnson'),
@@ -320,7 +320,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Who is known as “The Baltimore Bullet”?',
     answers: [
       Answer(1, 'Roger Federer'),
@@ -330,7 +330,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Where is Magnus Carlsen from?',
     answers: [
       Answer(1, 'England'),
@@ -340,7 +340,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Where did Snooker Game Originate from?',
     answers: [
       Answer(1, 'Austria'),
@@ -350,7 +350,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Which was the first Sport played on the Moon?',
     answers: [
       Answer(1, 'Golf'),
@@ -360,7 +360,7 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
+  Question(
     question: 'Where was the first Commonwealth Games held?',
     answers: [
       Answer(1, 'Canada'),
@@ -370,7 +370,7 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
+  Question(
     question: 'Which Sport has the Term “Butterfly Stroke”?',
     answers: [
       Answer(1, 'Table Tennis'),
@@ -380,7 +380,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'When did Michael Jordan retire?',
     answers: [
       Answer(1, '2004'),
@@ -390,7 +390,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'What is the 100m World Record of Usain Bolt?',
     answers: [
       Answer(1, '14.35 Sec'),
@@ -400,7 +400,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'Which Country has Won the Most World Snooker Championships?',
     answers: [
       Answer(1, 'Wales'),
@@ -410,7 +410,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Which is the Largest Football Stadium in the World?',
     answers: [
       Answer(1, 'Salt Lake Stadium'),
@@ -420,7 +420,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'What are the National Sports of China?',
     answers: [
       Answer(1, 'Table Tennis'),
@@ -430,7 +430,7 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
+  Question(
     question: 'What is the National Game of the USA?',
     answers: [
       Answer(1, 'Tennis'),
@@ -440,7 +440,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question: 'Who is given the Nickname “God of Cricket”?',
     answers: [
       Answer(1, 'Ricky Ponting'),
@@ -450,7 +450,7 @@ const List<Stage> quiz = [
     ],
     answer: 3,
   ),
-  Stage(
+  Question(
     question:
         'Who won the Most Grand Prix Motorcycle Racing World Championship?',
     answers: [
@@ -461,7 +461,7 @@ const List<Stage> quiz = [
     ],
     answer: 1,
   ),
-  Stage(
+  Question(
     question: 'What is the National Game of India?',
     answers: [
       Answer(1, 'Kabaddi'),
@@ -471,7 +471,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'Who is the Only Person to Win 6 Olympic Gold Medals in Archery?',
     answers: [
       Answer(1, 'Justin Huish'),
@@ -481,7 +481,7 @@ const List<Stage> quiz = [
     ],
     answer: 2,
   ),
-  Stage(
+  Question(
     question: 'What is the National Game of Japan?',
     answers: [
       Answer(1, 'Boat Racing'),

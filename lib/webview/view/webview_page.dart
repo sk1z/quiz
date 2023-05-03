@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AppWebView extends StatefulWidget {
-  const AppWebView({super.key, required this.url});
+class WebViewPage extends StatefulWidget {
+  const WebViewPage({super.key, required this.url});
 
   final String url;
 
   @override
-  State<AppWebView> createState() => _AppWebViewState();
+  State<WebViewPage> createState() => _WebViewPageState();
 }
 
-class _AppWebViewState extends State<AppWebView> {
+class _WebViewPageState extends State<WebViewPage> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
