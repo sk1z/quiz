@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_game/quiz/quiz.dart';
@@ -7,25 +5,42 @@ import 'package:quiz_game/quiz/quiz.dart';
 class AnswerColumn extends StatelessWidget {
   const AnswerColumn({
     super.key,
-    required this.questionNumber,
+    required this.question,
+    required this.answer,
     required this.maxWidth,
     required this.maxHeight,
+    required this.animation,
   });
 
-  final int questionNumber;
+  final int question;
+  final int answer;
   final double maxWidth;
   final double maxHeight;
+  final Animation<double> animation;
 
   @override
   Widget build(BuildContext context) {
-    final Question question = quizQuestions[questionNumber];
-    final bool answersShown =
-        context.select((QuizBloc bloc) => bloc.state.answersShown);
+    final Question question = quizQuestions[this.question];
 
-    const double paddingHorizontal = 12;
-    const double paddingVertical = 24;
+    const double paddingHorizontal = 18;
+    const double paddingVertical = 0;
 
-    final double questionCardHeight = (maxHeight - paddingVertical * 2) / 5;
+    final List<Widget> children = question.answers
+        .map((Answer answer) => AnswerCard(
+              onTap: () {
+                context.read<QuizBloc>().add(AnswerSelected(answer.number));
+              },
+              height: (maxHeight - paddingVertical * 2) / 5,
+              text: question.type == QuestionType.text ? answer.answer : null,
+              image: question.type == QuestionType.image ? answer.answer : null,
+              answer: this.answer,
+              correctAnswer: question.answer,
+              number: answer.number,
+              animation: animation,
+              maxWidth: maxWidth,
+              answerCount: question.answers.length,
+            ))
+        .toList();
 
     final Widget child;
 
@@ -33,49 +48,28 @@ class AnswerColumn extends StatelessWidget {
       child = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: question.answers
-            .map((Answer answer) => AnswerCard(
-                  height: questionCardHeight,
-                  text: answer.answer,
-                  onTap: () {
-                    context.read<QuizBloc>().add(AnswerSelected(answer.number));
-                  },
-                  correctAnswer:
-                      answersShown ? answer.number == question.answer : null,
-                ))
-            .toList(),
+        children: children,
       );
     } else {
       child = Center(
         child: GridView.count(
-          padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
           clipBehavior: Clip.none,
           shrinkWrap: true,
           childAspectRatio: ((maxWidth - paddingHorizontal * 2) / 2) /
               ((maxHeight - paddingVertical * 2) / 3),
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
-          // mainAxisSpacing: 2,
-          // crossAxisSpacing: 12,
-          children: question.answers
-              .map((Answer answer) => AnswerCard(
-                    height: questionCardHeight,
-                    image: answer.answer,
-                    onTap: () {
-                      context
-                          .read<QuizBloc>()
-                          .add(AnswerSelected(answer.number));
-                    },
-                    correctAnswer:
-                        answersShown ? answer.number == question.answer : null,
-                  ))
-              .toList(),
+          crossAxisSpacing: 16,
+          children: children,
         ),
       );
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: paddingVertical),
+      padding: const EdgeInsets.symmetric(
+        horizontal: paddingHorizontal,
+        vertical: paddingVertical,
+      ),
       child: child,
     );
   }

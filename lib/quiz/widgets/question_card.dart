@@ -2,32 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
 class QuestionCard extends StatelessWidget {
-  const QuestionCard({
-    super.key,
-    required this.questionNumber,
-  });
+  const QuestionCard({super.key, required this.question});
 
-  final int questionNumber;
+  final int question;
 
   @override
   Widget build(BuildContext context) {
-    final String question = quizQuestions[questionNumber].question;
+    final String question = quizQuestions[this.question].question;
 
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      color: Color(0xff0177a9),
+      margin: EdgeInsets.symmetric(horizontal: 18),
+      color: Color(0xfff5fcfe),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: BorderSide(
-          color: Color(0xff055a77),
-          width: 3,
-        ),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         height: 100,
         alignment: Alignment.center,
-        child: Text(question, textAlign: TextAlign.center),
+        child: Text(
+          question,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 21,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff3437a3),
+          ),
+        ),
       ),
     );
   }

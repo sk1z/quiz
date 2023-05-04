@@ -16,7 +16,6 @@ class Quiz extends StatelessWidget {
       value: quizBloc,
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        theme: theme,
         routerConfig: _router,
       ),
     );
@@ -34,12 +33,13 @@ class Quiz extends StatelessWidget {
         },
       ),
       GoRoute(
-        path: '/question/:question_number',
+        path: '/question/:round',
         builder: (BuildContext context, GoRouterState state) {
           return QuizQuestionPage(
-            questionNumber: int.parse(state.params['question_number']!),
+            round: int.parse(state.params['round']!),
+            question: int.parse(state.queryParams['question']!),
             score: int.parse(state.queryParams['score']!),
-            health: int.parse(state.queryParams['health']!),
+            answer: int.parse(state.queryParams['answer']!),
           );
         },
       ),
@@ -52,12 +52,13 @@ class Quiz extends StatelessWidget {
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final QuizState state = _quizState.state;
-      final int questionNumber = state.questionNumber;
-      if (questionNumber == -1) {
+      if (state.round == -1) {
         return '/';
-      } else if (questionNumber > -1) {
-        return '/question/${state.questions[questionNumber]}'
-            '?score=${state.score}&health=${state.health}';
+      } else if (state.round > -1) {
+        return '/question/${state.round + 1}'
+            '?question=${state.questions[state.round]}'
+            '&score=${state.score}'
+            '&answer=${state.answer}';
       }
       return '/result';
     },
@@ -68,7 +69,7 @@ class Quiz extends StatelessWidget {
 class _QuizStateRefreshStream extends ChangeNotifier {
   _QuizStateRefreshStream(QuizBloc bloc) : _state = bloc.state {
     _subscription = bloc.stream.asBroadcastStream().listen((state) {
-      if (state.questionNumber != _state.questionNumber) {
+      if (state.round != _state.round || state.answer != _state.answer) {
         _state = state;
         notifyListeners();
       }

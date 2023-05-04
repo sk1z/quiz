@@ -1,9 +1,8 @@
 export 'answer_card.dart';
 export 'answer_column.dart';
-export 'health.dart';
-export 'heart.dart';
-export 'home_button.dart';
+export 'continue_button.dart';
 export 'question_card.dart';
+export 'question_timer.dart';
+export 'quiz_score.dart';
+export 'restart_button.dart';
 export 'score.dart';
-export 'show_answer_button.dart';
-export 'stage_timer.dart';

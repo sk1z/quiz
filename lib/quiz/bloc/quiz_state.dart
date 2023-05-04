@@ -2,35 +2,30 @@ part of 'quiz_bloc.dart';
 
 class QuizState extends Equatable {
   const QuizState({
-    this.questionNumber = -1,
+    this.round = -1,
     this.questions = const [],
     this.score = 0,
-    this.health = 3,
-    this.answersShown = false,
+    this.answer = 0,
   });
 
-  final int questionNumber;
+  final int round;
   final List<int> questions;
   final int score;
-  final int health;
-  final bool answersShown;
+  final int answer;
 
   QuizState copyWith({
-    int? questionNumber,
+    int? round,
     List<int>? questions,
     int? score,
-    bool? answersShown,
-    int? health,
+    int? answer,
   }) =>
       QuizState(
-        questionNumber: questionNumber ?? this.questionNumber,
+        round: round ?? this.round,
         questions: questions ?? this.questions,
         score: score ?? this.score,
-        health: health ?? this.health,
-        answersShown: answersShown ?? this.answersShown,
+        answer: answer ?? this.answer,
       );
 
   @override
-  List<Object?> get props =>
-      [questionNumber, questions, score, health, answersShown];
+  List<Object?> get props => [round, questions, score, answer];
 }

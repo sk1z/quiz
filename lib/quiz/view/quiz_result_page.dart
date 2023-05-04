@@ -10,26 +10,36 @@ class QuizResultPage extends StatelessWidget {
     final QuizState state = context.read<QuizBloc>().state;
 
     return Scaffold(
+      backgroundColor: const Color(0xff55b993),
       body: SafeArea(
-        child: Center(
+        child: Align(
+          alignment: Alignment(0, 0.1),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Score(text: 'SCORE'),
-              Score(text: '${state.score}'),
+              Score(text: '${state.score} / 20'),
               const SizedBox(height: 36),
               ElevatedButton(
                 onPressed: () {
                   context.read<QuizBloc>().add(StartGamePressed());
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffd028dc),
+                  backgroundColor: const Color(0xffffaf00),
                 ),
-                child: const Text(
+                child: Text(
                   'Start new game',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
+                    shadows: [
+                      BoxShadow(
+                        color: Color(0xffb59432),
+                        offset: Offset(1, 1),
+                        blurRadius: 5,
+                      ),
+                    ],
                   ),
                 ),
               ),

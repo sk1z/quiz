@@ -11,6 +11,7 @@ class Score extends StatelessWidget {
       style: TextStyle(
         fontSize: 50,
         fontWeight: FontWeight.w900,
+        color: Colors.white,
       ),
       child: Stack(
         children: [

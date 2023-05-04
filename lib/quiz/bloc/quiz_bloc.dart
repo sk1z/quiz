@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:developer' as dev;
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -8,15 +9,20 @@ import 'package:quiz_game/quiz/quiz_questions.dart';
 part 'quiz_event.dart';
 part 'quiz_state.dart';
 
-const int _questionCount = 20;
+int _questionCount = 20;
+int answerSeconds = 10;
+int animationTime = 700;
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   QuizBloc() : super(const QuizState()) {
     on<StartGamePressed>(_startGamePressed);
     on<AnswerSelected>(_onAnswerSelected);
     on<TimeOver>(_timeOver);
-    on<MainMenuPressed>(_mainMenuPressed);
-    on<ChangeShowingAnswers>(_changeShowingAnswers);
+    on<RestartButtonPressed>(_RestartButtonPressed);
+    on<ContinuePressed>(_continuePressed);
+
+    // _questionCount = 3;
+    // answerSeconds = 3;
   }
 
   Timer? _timer;
@@ -37,7 +43,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     _setTimer();
 
     emit(QuizState(
-      questionNumber: 0,
+      round: 0,
       questions: questions,
     ));
   }
@@ -47,61 +53,62 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     final int answer = event.answer;
 
-    int score = state.score;
-    int health = state.health;
+    int correct = state.score;
 
-    if (answer == quizQuestions[state.questions[state.questionNumber]].answer) {
-      score += 100;
-    } else {
-      health--;
-    }
-
-    int stage = state.questionNumber;
-
-    if (stage < state.questions.length - 1 && health >= 0) {
-      stage++;
-      _setTimer();
-    } else {
-      stage = -2;
+    if (answer == quizQuestions[state.questions[state.round]].answer) {
+      correct++;
     }
 
     emit(state.copyWith(
-      questionNumber: stage,
-      score: score,
-      health: health,
+      score: correct,
+      answer: answer,
     ));
   }
 
   void _timeOver(TimeOver event, Emitter<QuizState> emit) {
     _timer?.cancel();
 
-    final int health = state.health - 1;
+    int answer = state.answer;
 
-    int stage = state.questionNumber;
-
-    if (stage < state.questions.length - 1 && health >= 0) {
-      stage++;
-      _setTimer();
-    } else {
-      stage = -2;
+    if (answer == 0) {
+      answer = quizQuestions[state.questions[state.round]].answer;
     }
 
-    emit(state.copyWith(questionNumber: stage, health: health));
+    emit(state.copyWith(answer: answer));
   }
 
-  void _mainMenuPressed(MainMenuPressed event, Emitter<QuizState> emit) {
-    emit(state.copyWith(questionNumber: -1, score: 0));
+  void _continuePressed(ContinuePressed event, Emitter<QuizState> emit) {
+    int round = state.round;
+
+    if (round < state.questions.length - 1) {
+      round++;
+      Future.delayed(Duration(milliseconds: animationTime), () {
+        _setTimer();
+      });
+    } else {
+      round = -2;
+    }
+
+    emit(state.copyWith(
+      round: round,
+      answer: 0,
+    ));
   }
 
-  void _changeShowingAnswers(
-      ChangeShowingAnswers event, Emitter<QuizState> emit) {
-    emit(state.copyWith(answersShown: !state.answersShown));
+  void _RestartButtonPressed(
+      RestartButtonPressed event, Emitter<QuizState> emit) {
+    _timer?.cancel();
+
+    emit(state.copyWith(
+      round: -1,
+      score: 0,
+    ));
   }
 
   void _setTimer() {
-    // _timer = Timer(const Duration(seconds: 10), () {
-    //   add(TimeOver());
-    // });
+    _timer = Timer(Duration(seconds: answerSeconds), () {
+      add(TimeOver());
+    });
   }
 
   @override

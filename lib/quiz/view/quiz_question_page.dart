@@ -4,23 +4,27 @@ import 'package:quiz_game/quiz/quiz.dart';
 class QuizQuestionPage extends StatelessWidget {
   const QuizQuestionPage({
     super.key,
-    required this.questionNumber,
+    required this.round,
+    required this.question,
     required this.score,
-    required this.health,
+    required this.answer,
   });
 
-  final int questionNumber;
+  final int round;
+  final int question;
   final int score;
-  final int health;
+  final int answer;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff3a4bc3),
       body: SafeArea(
         child: QuizQuestionForm(
-          questionNumber: questionNumber,
+          round: round,
+          question: question,
           score: score,
-          health: health,
+          answer: answer,
         ),
       ),
     );
