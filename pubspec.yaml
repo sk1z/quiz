@@ -49,6 +49,7 @@ dependencies:
   connectivity_plus: ^3.0.5
   device_info_plus: ^8.2.1
   font_awesome_flutter: ^10.4.0
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

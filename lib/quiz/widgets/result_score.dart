@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Score extends StatelessWidget {
-  const Score({super.key, required this.text});
+class ResultScore extends StatelessWidget {
+  const ResultScore({super.key, required this.text});
 
   final String text;
 

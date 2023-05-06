@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
-class QuizQuestionPage extends StatelessWidget {
-  const QuizQuestionPage({
+class QuizRoundPage extends StatelessWidget {
+  const QuizRoundPage({
     super.key,
     required this.round,
     required this.question,
@@ -20,7 +20,7 @@ class QuizQuestionPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xff3a4bc3),
       body: SafeArea(
-        child: QuizQuestionForm(
+        child: QuizRoundForm(
           round: round,
           question: question,
           score: score,

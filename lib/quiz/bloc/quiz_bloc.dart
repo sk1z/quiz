@@ -4,37 +4,39 @@ import 'dart:developer' as dev;
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_game/quiz/quiz_questions.dart';
+import 'package:quiz_game/quiz/quiz.dart';
 
 part 'quiz_event.dart';
 part 'quiz_state.dart';
 
-int _questionCount = 20;
-int answerSeconds = 10;
-int animationTime = 700;
+const int questionCount = 20;
+const int answerSeconds = 15;
+const int animationTime = 1000;
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   QuizBloc() : super(const QuizState()) {
     on<StartGamePressed>(_startGamePressed);
     on<AnswerSelected>(_onAnswerSelected);
     on<TimeOver>(_timeOver);
-    on<RestartButtonPressed>(_RestartButtonPressed);
+    on<RestartPressed>(_restartPressed);
     on<ContinuePressed>(_continuePressed);
-
-    // _questionCount = 3;
-    // answerSeconds = 3;
   }
 
   Timer? _timer;
 
   void _startGamePressed(StartGamePressed event, Emitter<QuizState> emit) {
+    quizQuestions.removeWhere(
+        (Question question) => question.type == QuestionType.image);
+
+    final int count = min(questionCount, quizQuestions.length);
+
     final List<int> numbers = [
       for (int i = 0; i < quizQuestions.length; i++) i
     ];
     final List<int> questions = [];
 
     final Random random = Random();
-    for (int i = 0; i < _questionCount; i++) {
+    for (int i = 0; i < count; i++) {
       final int number = random.nextInt(numbers.length);
       questions.add(numbers[number]);
       numbers.removeAt(number);
@@ -95,8 +97,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     ));
   }
 
-  void _RestartButtonPressed(
-      RestartButtonPressed event, Emitter<QuizState> emit) {
+  void _restartPressed(RestartPressed event, Emitter<QuizState> emit) {
     _timer?.cancel();
 
     emit(state.copyWith(

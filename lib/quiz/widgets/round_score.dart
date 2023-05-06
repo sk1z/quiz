@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class QuizScore extends StatelessWidget {
-  const QuizScore({super.key, required this.text, this.width});
+class RoundScore extends StatelessWidget {
+  const RoundScore({super.key, required this.text, this.width});
 
   final String text;
   final double? width;

@@ -18,8 +18,8 @@ class QuizResultPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Score(text: 'SCORE'),
-              Score(text: '${state.score} / 20'),
+              ResultScore(text: 'SCORE'),
+              ResultScore(text: '${state.score} / 20'),
               const SizedBox(height: 36),
               ElevatedButton(
                 onPressed: () {

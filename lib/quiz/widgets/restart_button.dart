@@ -11,7 +11,7 @@ class RestartButton extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       child: ElevatedButton(
         onPressed: () {
-          context.read<QuizBloc>().add(RestartButtonPressed());
+          context.read<QuizBloc>().add(RestartPressed());
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(4),

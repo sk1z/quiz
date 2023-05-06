@@ -1,6 +1,6 @@
 import 'package:quiz_game/quiz/models/models.dart';
 
-const List<Question> quizQuestions = [
+List<Question> quizQuestions = [
   Question(
     question: 'Who scored the fastest penta-trick (9 minutes)?',
     answers: [

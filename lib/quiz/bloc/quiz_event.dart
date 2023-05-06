@@ -20,6 +20,6 @@ class AnswerSelected extends QuizEvent {
 
 class TimeOver extends QuizEvent {}
 
-class RestartButtonPressed extends QuizEvent {}
+class RestartPressed extends QuizEvent {}
 
 class ContinuePressed extends QuizEvent {}

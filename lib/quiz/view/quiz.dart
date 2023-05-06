@@ -35,7 +35,7 @@ class Quiz extends StatelessWidget {
       GoRoute(
         path: '/question/:round',
         builder: (BuildContext context, GoRouterState state) {
-          return QuizQuestionPage(
+          return QuizRoundPage(
             round: int.parse(state.params['round']!),
             question: int.parse(state.queryParams['question']!),
             score: int.parse(state.queryParams['score']!),

@@ -31,9 +31,9 @@ class AnswerColumn extends StatelessWidget {
                 context.read<QuizBloc>().add(AnswerSelected(answer.number));
               },
               height: (maxHeight - paddingVertical * 2) / 5,
-              text: question.type == QuestionType.text ? answer.answer : null,
-              image: question.type == QuestionType.image ? answer.answer : null,
-              answer: this.answer,
+              type: question.type,
+              answer: answer.answer,
+              selectedAnswer: this.answer,
               correctAnswer: question.answer,
               number: answer.number,
               animation: animation,
@@ -42,28 +42,18 @@ class AnswerColumn extends StatelessWidget {
             ))
         .toList();
 
-    final Widget child;
-
-    if (question.type == QuestionType.text) {
-      child = Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
+    final Widget child = Center(
+      child: GridView.count(
+        clipBehavior: Clip.none,
+        shrinkWrap: true,
+        childAspectRatio: ((maxWidth - paddingHorizontal * 2) / 2) /
+            ((maxHeight - paddingVertical * 2) / 3),
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
         children: children,
-      );
-    } else {
-      child = Center(
-        child: GridView.count(
-          clipBehavior: Clip.none,
-          shrinkWrap: true,
-          childAspectRatio: ((maxWidth - paddingHorizontal * 2) / 2) /
-              ((maxHeight - paddingVertical * 2) / 3),
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          children: children,
-        ),
-      );
-    }
+      ),
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(
