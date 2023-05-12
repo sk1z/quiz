@@ -18,8 +18,8 @@ class AnswerSelected extends QuizEvent {
   List<Object> get props => [answer];
 }
 
+class ContinuePressed extends QuizEvent {}
+
 class TimeOver extends QuizEvent {}
 
 class RestartPressed extends QuizEvent {}
-
-class ContinuePressed extends QuizEvent {}

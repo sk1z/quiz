@@ -1,5 +1,5 @@
 export 'answer_card.dart';
-export 'answer_column.dart';
+export 'answer_grid.dart';
 export 'continue_button.dart';
 export 'question_card.dart';
 export 'restart_button.dart';

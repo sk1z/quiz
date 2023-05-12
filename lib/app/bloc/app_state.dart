@@ -1,11 +1,11 @@
 part of 'app_bloc.dart';
 
 class AppState extends Equatable {
-  const AppState({required this.internetConnection, this.url});
+  const AppState({required this.internetConnection, required this.url});
 
   final bool internetConnection;
-  final String? url;
+  final String url;
 
   @override
-  List<Object?> get props => [internetConnection, url];
+  List<Object> get props => [internetConnection, url];
 }

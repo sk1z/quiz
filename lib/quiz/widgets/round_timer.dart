@@ -1,11 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:quiz_game/quiz/quiz.dart';
-
-Duration _duration = Duration(seconds: answerSeconds);
-
-const Curve _curve = Curves.linear;
 
 class RoundTimer extends StatefulWidget {
   const RoundTimer({
@@ -25,30 +19,55 @@ class RoundTimer extends StatefulWidget {
 
 class _RoundTimerState extends State<RoundTimer>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: _duration,
-    value: 1,
+  static final Animatable<double> _fadeIntervalTween =
+      CurveTween(curve: Interval(0, 0.25));
+  static final Animatable<double> _fadeTween = Tween<double>(begin: 1, end: 0);
+  static final Animatable<double> _appeareTween =
+      CurveTween(curve: Interval(0.44, 1));
+  static final Animatable<double> _redYellowIntervalTween =
+      CurveTween(curve: Interval(0, 0.5));
+  static final Animatable<double> _yellowGreenIntervalTween =
+      CurveTween(curve: Interval(0.5, 1));
+  static final Animatable<Color?> _redYellowTween = ColorTween(
+    begin: const Color(0xffdd3e37),
+    end: const Color(0xffefd838),
   );
-  late final Animation<double> _animation = CurvedAnimation(
-    parent: _controller,
-    curve: _curve,
+  static final Animatable<Color?> _yellowGreenTween = ColorTween(
+    begin: const Color(0xffefd838),
+    end: const Color(0xff0aeb6f),
   );
 
-  final CurveTween _fadingTween = CurveTween(curve: Interval(0, 0.25));
-  final CurveTween _appearingTween = CurveTween(curve: Interval(0.44, 1));
-
-  final Animatable<double> _fadingAnimation = Tween<double>(begin: 1, end: 0);
-
-  late final Animatable<double> _fading;
+  late Animation<double> _fade;
+  late Animation<double> _appear;
+  late AnimationController _controller;
+  late Animation<Color?> _redYellow;
+  late Animation<Color?> _yellowGreen;
 
   @override
   void initState() {
     super.initState();
-    _fading = _fadingAnimation.chain(_fadingTween);
+    _fade = widget.animation.drive(_fadeTween.chain(_fadeIntervalTween));
+    _appear = widget.animation.drive(_appeareTween);
+
+    _controller = AnimationController(
+      value: 1,
+      duration: answerTime,
+      vsync: this,
+    );
+    _redYellow =
+        _controller.drive(_redYellowTween.chain(_redYellowIntervalTween));
+    _yellowGreen =
+        _controller.drive(_yellowGreenTween.chain(_yellowGreenIntervalTween));
+
     if (widget.animate) {
       _controller.reverse();
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -66,48 +85,31 @@ class _RoundTimerState extends State<RoundTimer>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.animation,
-      builder: (BuildContext context, Widget? child) {
-        return FadeTransition(
-          opacity: widget.animation.value < 0.44
-              ? widget.animation.drive(_fading)
-              : widget.animation.drive(_appearingTween),
-          child: child,
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 36),
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+    final Animation<double> opacity =
+        widget.animation.value < 0.44 ? _fade : _appear;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        child: FadeTransition(
+          opacity: opacity,
           child: AnimatedBuilder(
-              animation: _animation,
+              animation: _controller,
               builder: (BuildContext context, Widget? child) {
+                final Color? color = _controller.value < 0.5
+                    ? _redYellow.value
+                    : _yellowGreen.value;
+
                 return LinearProgressIndicator(
                   minHeight: 10,
-                  backgroundColor: Color(0xff2039ce),
-                  color: _animation.value > 0.5
-                      ? Color.lerp(
-                          Color(0xffefd838),
-                          Color(0xff0aeb6f),
-                          lerpDouble(-1, 1, _animation.value)!,
-                        )
-                      : Color.lerp(
-                          Color(0xffdd3e37),
-                          Color(0xffefd838),
-                          lerpDouble(0, 2, _animation.value)!,
-                        ),
-                  value: _animation.value,
+                  backgroundColor: const Color(0xff2039ce),
+                  color: color,
+                  value: _controller.value,
                 );
               }),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

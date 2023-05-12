@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:developer' as dev;
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -10,8 +9,8 @@ part 'quiz_event.dart';
 part 'quiz_state.dart';
 
 const int questionCount = 20;
-const int answerSeconds = 15;
-const int animationTime = 1000;
+const Duration answerTime = Duration(seconds: 15);
+const Duration animationTime = Duration(milliseconds: 1000);
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   QuizBloc() : super(const QuizState()) {
@@ -25,8 +24,8 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   Timer? _timer;
 
   void _startGamePressed(StartGamePressed event, Emitter<QuizState> emit) {
-    quizQuestions.removeWhere(
-        (Question question) => question.type == QuestionType.image);
+    // quizQuestions.removeWhere(
+    //     (Question question) => question.type == QuestionType.image);
 
     final int count = min(questionCount, quizQuestions.length);
 
@@ -55,15 +54,33 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     final int answer = event.answer;
 
-    int correct = state.score;
+    int score = state.score;
 
     if (answer == quizQuestions[state.questions[state.round]].answer) {
-      correct++;
+      score++;
     }
 
     emit(state.copyWith(
-      score: correct,
+      score: score,
       answer: answer,
+    ));
+  }
+
+  void _continuePressed(ContinuePressed event, Emitter<QuizState> emit) {
+    int round = state.round;
+
+    if (round < state.questions.length - 1) {
+      round++;
+      Future.delayed(animationTime, () {
+        _setTimer();
+      });
+    } else {
+      round = -2;
+    }
+
+    emit(state.copyWith(
+      round: round,
+      answer: 0,
     ));
   }
 
@@ -79,35 +96,14 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     emit(state.copyWith(answer: answer));
   }
 
-  void _continuePressed(ContinuePressed event, Emitter<QuizState> emit) {
-    int round = state.round;
-
-    if (round < state.questions.length - 1) {
-      round++;
-      Future.delayed(Duration(milliseconds: animationTime), () {
-        _setTimer();
-      });
-    } else {
-      round = -2;
-    }
-
-    emit(state.copyWith(
-      round: round,
-      answer: 0,
-    ));
-  }
-
   void _restartPressed(RestartPressed event, Emitter<QuizState> emit) {
     _timer?.cancel();
 
-    emit(state.copyWith(
-      round: -1,
-      score: 0,
-    ));
+    emit(state.copyWith(round: -1));
   }
 
   void _setTimer() {
-    _timer = Timer(Duration(seconds: answerSeconds), () {
+    _timer = Timer(answerTime, () {
       add(TimeOver());
     });
   }

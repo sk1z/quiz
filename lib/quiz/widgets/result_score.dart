@@ -8,7 +8,7 @@ class ResultScore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle.merge(
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 50,
         fontWeight: FontWeight.w900,
         color: Colors.white,
@@ -21,7 +21,7 @@ class ResultScore extends StatelessWidget {
               foreground: Paint()
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = 7
-                ..color = Color(0xffb85263),
+                ..color = const Color(0xffb85263),
             ),
           ),
           Text(
@@ -30,7 +30,7 @@ class ResultScore extends StatelessWidget {
               foreground: Paint()
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = 5
-                ..color = Color(0xfffea50d),
+                ..color = const Color(0xfffea50d),
             ),
           ),
           Text(text),

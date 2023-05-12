@@ -3,23 +3,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
 class QuizResultPage extends StatelessWidget {
-  const QuizResultPage({super.key});
+  const QuizResultPage({super.key, required this.score});
+
+  final int score;
 
   @override
   Widget build(BuildContext context) {
-    final QuizState state = context.read<QuizBloc>().state;
-
     return Scaffold(
       backgroundColor: const Color(0xff55b993),
       body: SafeArea(
         child: Align(
-          alignment: Alignment(0, 0.1),
+          alignment: const Alignment(0, 0.1),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ResultScore(text: 'SCORE'),
-              ResultScore(text: '${state.score} / 20'),
+              const ResultScore(text: 'SCORE'),
+              ResultScore(text: '$score / $questionCount'),
               const SizedBox(height: 36),
               ElevatedButton(
                 onPressed: () {
@@ -28,7 +28,7 @@ class QuizResultPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xffffaf00),
                 ),
-                child: Text(
+                child: const Text(
                   'Start new game',
                   style: TextStyle(
                     fontSize: 20,

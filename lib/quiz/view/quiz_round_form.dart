@@ -21,41 +21,51 @@ class QuizRoundForm extends StatefulWidget {
 }
 
 class _QuizRoundFormState extends State<QuizRoundForm>
-    with TickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    value: 1,
-    duration: Duration(milliseconds: animationTime),
-  )
-    ..addListener(() {
-      print(_controller.value);
-      if (_controller.value >= 0.44 && round != widget.round) {
-        round = widget.round;
-        question = widget.question;
-        answer = widget.answer;
-        print(answer);
-        setState(() {});
-      }
-    })
-    ..addStatusListener((AnimationStatus status) {
-      if (status == AnimationStatus.completed) {
-        animateTimer = true;
-        setState(() {});
-      }
-    });
-
-  final CurveTween _opacity = CurveTween(curve: Interval(0, 0.26));
-  final Animatable<double> _itemPosition = Tween<double>(
-    begin: 1,
-    end: 0,
-  );
-
+    with SingleTickerProviderStateMixin {
   _QuizRoundFormState(this.round, this.question, this.answer);
 
   int round;
   int question;
   int answer;
   bool animateTimer = true;
+
+  static final Animatable<double> _opacityIntervalTween =
+      CurveTween(curve: const Interval(0, 0.26));
+  static final Animatable<double> _opacityTween =
+      Tween<double>(begin: 1, end: 0);
+
+  late AnimationController _controller;
+  late Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(value: 1, duration: animationTime, vsync: this)
+          ..addListener(_animationValueChanged)
+          ..addStatusListener(_animationStatusChanged);
+    _opacity = _controller.drive(_opacityTween.chain(_opacityIntervalTween));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _animationValueChanged() {
+    if (_controller.value < 0.44 || round == widget.round) return;
+    round = widget.round;
+    question = widget.question;
+    answer = widget.answer;
+    setState(() {});
+  }
+
+  void _animationStatusChanged(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    animateTimer = true;
+    setState(() {});
+  }
 
   @override
   void didUpdateWidget(covariant QuizRoundForm oldWidget) {
@@ -72,20 +82,15 @@ class _QuizRoundFormState extends State<QuizRoundForm>
     }
   }
 
-  final CurveTween _textOpacity = CurveTween(curve: Interval(0.5, 1));
-
-  final Animatable<double> _scale = Tween<double>(
-    begin: 0.8,
-    end: 1,
-  );
-
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const SizedBox(height: 18),
         Row(
           children: [
+            const SizedBox(width: 18),
             const Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -104,9 +109,10 @@ class _QuizRoundFormState extends State<QuizRoundForm>
                 child: RoundScore(text: '$round/$questionCount', width: 75),
               ),
             ),
+            const SizedBox(width: 18),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 24),
         QuestionCard(question: question, animation: _controller),
         const SizedBox(height: 18),
         RoundTimer(
@@ -114,44 +120,27 @@ class _QuizRoundFormState extends State<QuizRoundForm>
           animate: animateTimer,
           animation: _controller,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
         Expanded(child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
-            return AnimatedBuilder(
+            final Widget answerColumn = AnswerGrid(
+              question: question,
+              answer: answer,
+              maxWidth: constraints.maxWidth,
+              maxHeight: constraints.maxHeight,
               animation: _controller,
-              builder: (BuildContext context, Widget? child) {
-                if (_controller.value <= 0.5) {
-                  return FadeTransition(
-                    opacity: _itemPosition.chain(_opacity).animate(_controller),
-                    child: child,
-                  );
-                }
+            );
 
-                // if (quizQuestions[question].type == QuestionType.text) {
-                //   return FadeTransition(
-                //     opacity: _textOpacity.animate(_roundController),
-                //     child: ScaleTransition(
-                //       scale:
-                //           _scale.chain(_textOpacity).animate(_roundController),
-                //       child: child,
-                //     ),
-                //   );
-                // }
+            if (round == widget.round) return answerColumn;
 
-                return child!;
-              },
-              child: AnswerColumn(
-                question: question,
-                answer: answer,
-                maxWidth: constraints.maxWidth,
-                maxHeight: constraints.maxHeight,
-                animation: _controller,
-              ),
+            return FadeTransition(
+              opacity: _opacity,
+              child: answerColumn,
             );
           },
         )),
-        const SizedBox(height: 18),
-        ContinueButton(selectedAnswer: widget.answer),
+        const SizedBox(height: 26),
+        ContinueButton(show: widget.answer != 0),
         const SizedBox(height: 24),
       ],
     );

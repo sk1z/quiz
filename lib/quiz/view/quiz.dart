@@ -46,7 +46,9 @@ class Quiz extends StatelessWidget {
       GoRoute(
         path: '/result',
         builder: (BuildContext context, GoRouterState state) {
-          return const QuizResultPage();
+          return QuizResultPage(
+            score: int.parse(state.queryParams['score']!),
+          );
         },
       ),
     ],
@@ -60,7 +62,7 @@ class Quiz extends StatelessWidget {
             '&score=${state.score}'
             '&answer=${state.answer}';
       }
-      return '/result';
+      return '/result?score=${state.score}';
     },
     refreshListenable: _quizState,
   );
