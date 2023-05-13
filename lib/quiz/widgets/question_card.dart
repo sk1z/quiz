@@ -10,13 +10,40 @@ class QuestionCard extends StatelessWidget {
   final int question;
   final Animation<double> animation;
 
+  static final Animatable<double> _disappearanceTween =
+      CurveTween(curve: const Interval(0, 0.25));
+  static final Animatable<double> _coverAngleIntervalTween =
+      CurveTween(curve: const Interval(0.44, 0.7));
+  static final Animatable<double> _newAngleIntervalTween =
+      CurveTween(curve: const Interval(0.7, 1));
+
+  static final Animatable<double> _oldAngleTween = Tween<double>(
+    begin: 0,
+    end: math.pi / 12.0,
+  );
+  static final Animatable<double> _coverAngleTween = Tween<double>(
+    begin: 0,
+    end: math.pi * 0.5,
+  );
+  static final Animatable<double> _newAngleTween = Tween<double>(
+    begin: math.pi * -0.5,
+    end: 0,
+  );
+
+  static final Animatable<double> _oldAngle =
+      _oldAngleTween.chain(_disappearanceTween);
+  static final Animatable<double> _coverAngle =
+      _coverAngleTween.chain(_coverAngleIntervalTween);
+  static final Animatable<double> _newAngle =
+      _newAngleTween.chain(_newAngleIntervalTween);
+
   @override
   Widget build(BuildContext context) {
     final String question = quizQuestions[this.question].question;
 
     final Widget card = Card(
-      margin: EdgeInsets.symmetric(horizontal: 18),
-      color: Color(0xfff5fcfe),
+      margin: const EdgeInsets.symmetric(horizontal: 18),
+      color: const Color(0xfff5fcfe),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
@@ -36,38 +63,17 @@ class QuestionCard extends StatelessWidget {
       ),
     );
 
-    final double _screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
-    final CurveTween _dissapearingTween = CurveTween(curve: Interval(0, 0.25));
-    final Animatable<Offset> _translateAnimation =
-        Tween<Offset>(begin: Offset.zero, end: Offset(_screenWidth - 10, 0));
-    final Animatable<double> _rotateAnimation = Tween<double>(
-      begin: 0,
-      end: math.pi / 12.0,
+    final Animatable<Offset> offsetTween = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset(screenWidth - 10, 0),
     );
-    final Animatable<Offset> _translate =
-        _translateAnimation.chain(_dissapearingTween);
-    final Animatable<double> _rotate =
-        _rotateAnimation.chain(_dissapearingTween);
+    final Animatable<Offset> offset = offsetTween.chain(_disappearanceTween);
 
-    final CurveTween _rotateOldTween = CurveTween(curve: Interval(0.44, 0.7));
-    final CurveTween _rotateNewTween = CurveTween(curve: Interval(0.7, 1));
-    final Animatable<double> _rotateOldAnimation = Tween<double>(
-      begin: 0,
-      end: math.pi * 0.5,
-    );
-    final Animatable<double> _rotateNewAnimation = Tween<double>(
-      begin: math.pi * -0.5,
-      end: 0,
-    );
-    final Animatable<double> _ratiateOld =
-        _rotateOldAnimation.chain(_rotateOldTween);
-    final Animatable<double> _ratiateNew =
-        _rotateNewAnimation.chain(_rotateNewTween);
-
-    final Widget quizCard = Card(
-      margin: EdgeInsets.symmetric(horizontal: 18),
-      color: Color(0xff252b30),
+    final Widget coverCard = Card(
+      margin: const EdgeInsets.symmetric(horizontal: 18),
+      color: const Color(0xff252b30),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
@@ -95,42 +101,24 @@ class QuestionCard extends StatelessWidget {
             Transform(
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.001)
-                ..rotateY(_ratiateOld.evaluate(animation)),
-              alignment: FractionalOffset.center,
-              child: quizCard,
+                ..rotateY(_coverAngle.evaluate(animation)),
+              alignment: FractionalOffset.bottomCenter,
+              child: coverCard,
             ),
             Transform(
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.001)
-                ..rotateY(_ratiateNew.evaluate(animation)),
-              alignment: FractionalOffset.center,
+                ..rotateY(_newAngle.evaluate(animation)),
+              alignment: FractionalOffset.bottomCenter,
               child: card,
             ),
             Transform.translate(
-              offset: _translate.evaluate(animation),
+              offset: offset.evaluate(animation),
               child: Transform.rotate(
-                angle: _rotate.evaluate(animation),
+                angle: _oldAngle.evaluate(animation),
                 child: card,
               ),
             ),
-            // Transform.translate(
-            //   offset: Offset(-10, 0),
-            //   child: Transform(
-            //     transform: Matrix4(
-            //       1, 0, 0, 0.001,
-            //       //
-            //       0, 1, 0, 0,
-            //       //
-            //       0, 0, 1, 0,
-            //       //
-            //       0, 0, 0, 1,
-            //     )
-            //       ..scale(.9)
-            //       ..rotateY(math.pi * 0.2),
-            //     alignment: FractionalOffset.center,
-            //     child: card,
-            //   ),
-            // ),
           ],
         );
       },
