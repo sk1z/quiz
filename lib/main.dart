@@ -49,10 +49,10 @@ Future<void> main() async {
 Future<String> getUrl() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   String? url = prefs.getString('url');
-  if (url != null) return url;
+  // if (url != null) return url;
 
-  final bool isEmu = await checkIsEmu();
-  if (isEmu) return '';
+  // final bool isEmu = await checkIsEmu();
+  // if (isEmu) return '';
 
   await _remoteConfig.fetchAndActivate();
 
@@ -71,7 +71,8 @@ Future<String> getUrl() async {
   if (url.isNotEmpty) {
     prefs.setString('url', url);
   }
-  return url;
+  // return url;
+  return '';
 }
 
 Future<bool> checkIsEmu() async {

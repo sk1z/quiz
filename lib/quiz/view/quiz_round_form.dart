@@ -16,17 +16,14 @@ class QuizRoundForm extends StatefulWidget {
   final int answer;
 
   @override
-  State<QuizRoundForm> createState() =>
-      _QuizRoundFormState(round, question, answer);
+  State<QuizRoundForm> createState() => _QuizRoundFormState();
 }
 
 class _QuizRoundFormState extends State<QuizRoundForm>
     with SingleTickerProviderStateMixin {
-  _QuizRoundFormState(this.round, this.question, this.answer);
-
-  int round;
-  int question;
-  int answer;
+  late int round;
+  late int question;
+  late int answer;
   bool animateTimer = true;
 
   static final Animatable<double> _opacityIntervalTween =
@@ -40,6 +37,10 @@ class _QuizRoundFormState extends State<QuizRoundForm>
   @override
   void initState() {
     super.initState();
+    round = widget.round;
+    question = widget.question;
+    answer = widget.answer;
+
     _controller =
         AnimationController(value: 1, duration: animationTime, vsync: this)
           ..addListener(_animationValueChanged)

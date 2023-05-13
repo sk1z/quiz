@@ -19,7 +19,7 @@ class RestartButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      child: Icon(
+      child: const Icon(
         Icons.settings_backup_restore,
         size: 30,
         color: Colors.black54,

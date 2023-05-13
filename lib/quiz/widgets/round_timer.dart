@@ -20,14 +20,14 @@ class RoundTimer extends StatefulWidget {
 class _RoundTimerState extends State<RoundTimer>
     with SingleTickerProviderStateMixin {
   static final Animatable<double> _fadeIntervalTween =
-      CurveTween(curve: Interval(0, 0.25));
+      CurveTween(curve: const Interval(0, 0.25));
   static final Animatable<double> _fadeTween = Tween<double>(begin: 1, end: 0);
   static final Animatable<double> _appeareTween =
-      CurveTween(curve: Interval(0.44, 1));
+      CurveTween(curve: const Interval(0.44, 1));
   static final Animatable<double> _redYellowIntervalTween =
-      CurveTween(curve: Interval(0, 0.5));
+      CurveTween(curve: const Interval(0, 0.5));
   static final Animatable<double> _yellowGreenIntervalTween =
-      CurveTween(curve: Interval(0.5, 1));
+      CurveTween(curve: const Interval(0.5, 1));
   static final Animatable<Color?> _redYellowTween = ColorTween(
     begin: const Color(0xffdd3e37),
     end: const Color(0xffefd838),

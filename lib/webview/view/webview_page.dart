@@ -15,7 +15,7 @@ class _WebViewPageState extends State<WebViewPage> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
-  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
+  final InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
       useShouldOverrideUrlLoading: true,
       mediaPlaybackRequiresUserGesture: false,
@@ -25,9 +25,9 @@ class _WebViewPageState extends State<WebViewPage> {
     ),
   );
 
-  late PullToRefreshController pullToRefreshController;
+  late final PullToRefreshController pullToRefreshController;
   String url = '';
-  final urlController = TextEditingController();
+  final TextEditingController urlController = TextEditingController();
 
   @override
   void initState() {

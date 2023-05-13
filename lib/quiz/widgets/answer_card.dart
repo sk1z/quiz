@@ -35,7 +35,7 @@ class _AnswerCardState extends State<AnswerCard>
   bool _tapCanceled = false;
 
   static final Animatable<double> _slideIntervalTween =
-      CurveTween(curve: Interval(0.44, 1, curve: Curves.easeOut));
+      CurveTween(curve: const Interval(0.44, 1, curve: Curves.easeOut));
   late Animatable<Offset> _slideTween;
   static final Animatable<double> _scaleTween =
       Tween<double>(begin: 1, end: 0.9);
@@ -85,9 +85,9 @@ class _AnswerCardState extends State<AnswerCard>
     if (widget.selectedAnswer > 0) {
       if (widget.number == widget.correctAnswer) {
         if (_tapActive) {
-          backgroundColor = Color(0xff02903a);
+          backgroundColor = const Color(0xff02903a);
         } else {
-          backgroundColor = Color(0xff26cf3e);
+          backgroundColor = const Color(0xff26cf3e);
         }
       } else if (widget.number == widget.selectedAnswer) {
         if (_tapActive) {

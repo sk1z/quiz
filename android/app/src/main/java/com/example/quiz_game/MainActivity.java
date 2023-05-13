@@ -1,4 +1,4 @@
-package quizfootball.teamsport;
+package sk1z.quiz;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;

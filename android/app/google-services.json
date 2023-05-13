@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:617413264464:android:6d55163fc4aa2078ce3d55",
+        "mobilesdk_app_id": "1:617413264464:android:7295a634f2b4c93cce3d55",
         "android_client_info": {
-          "package_name": "com.example.quiz_game"
+          "package_name": "sk1z.quiz"
         }
       },
       "oauth_client": [

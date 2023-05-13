@@ -81,10 +81,10 @@ class QuestionCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12),
         height: 100,
         alignment: Alignment.center,
-        child: Text(
+        child: const Text(
           'Quiz Game',
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
             color: Colors.white,

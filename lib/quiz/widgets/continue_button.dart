@@ -92,10 +92,10 @@ class _ContinueButtonState extends State<ContinueButton>
       scale: _scale,
       child: Container(
         decoration: BoxDecoration(
-          boxShadow: [
-            const BoxShadow(
+          boxShadow: const [
+            BoxShadow(
               color: Colors.black38,
-              offset: const Offset(1, 1),
+              offset: Offset(1, 1),
               blurRadius: 1,
             ),
           ],
