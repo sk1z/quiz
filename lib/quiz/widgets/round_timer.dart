@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
+const List<Color> _colors = const [
+  Color(0xffdd3e37),
+  Color(0xffe65630),
+  Color(0xffed6d2a),
+  Color(0xfff28323),
+  Color(0xfff49920),
+  Color(0xfff4ae21),
+  Color(0xfff3c32a),
+  Color(0xffefd838),
+  Color(0xffdcdc35),
+  Color(0xffc8e037),
+  Color(0xffb2e33d),
+  Color(0xff9ae646),
+  Color(0xff7ee852),
+  Color(0xff5aea60),
+  Color(0xff0aeb6f),
+];
+
 class RoundTimer extends StatefulWidget {
   const RoundTimer({
     super.key,
@@ -24,24 +42,21 @@ class _RoundTimerState extends State<RoundTimer>
   static final Animatable<double> _fadeTween = Tween<double>(begin: 1, end: 0);
   static final Animatable<double> _appeareTween =
       CurveTween(curve: const Interval(0.44, 1));
-  static final Animatable<double> _redYellowIntervalTween =
-      CurveTween(curve: const Interval(0, 0.5));
-  static final Animatable<double> _yellowGreenIntervalTween =
-      CurveTween(curve: const Interval(0.5, 1));
-  static final Animatable<Color?> _redYellowTween = ColorTween(
-    begin: const Color(0xffdd3e37),
-    end: const Color(0xffefd838),
-  );
-  static final Animatable<Color?> _yellowGreenTween = ColorTween(
-    begin: const Color(0xffefd838),
-    end: const Color(0xff0aeb6f),
-  );
+  static final Animatable<Color?> _colorTween = TweenSequence<Color?>([
+    for (int i = 0; i < _colors.length - 1; i++)
+      TweenSequenceItem(
+        weight: 1.0,
+        tween: ColorTween(
+          begin: _colors[i],
+          end: _colors[i + 1],
+        ),
+      ),
+  ]);
 
   late Animation<double> _fade;
   late Animation<double> _appear;
   late AnimationController _controller;
-  late Animation<Color?> _redYellow;
-  late Animation<Color?> _yellowGreen;
+  late Animation<Color?> _color;
 
   @override
   void initState() {
@@ -54,10 +69,7 @@ class _RoundTimerState extends State<RoundTimer>
       duration: answerTime,
       vsync: this,
     );
-    _redYellow =
-        _controller.drive(_redYellowTween.chain(_redYellowIntervalTween));
-    _yellowGreen =
-        _controller.drive(_yellowGreenTween.chain(_yellowGreenIntervalTween));
+    _color = _controller.drive(_colorTween);
 
     if (widget.animate) {
       _controller.reverse();
@@ -97,14 +109,10 @@ class _RoundTimerState extends State<RoundTimer>
           child: AnimatedBuilder(
               animation: _controller,
               builder: (BuildContext context, Widget? child) {
-                final Color? color = _controller.value < 0.5
-                    ? _redYellow.value
-                    : _yellowGreen.value;
-
                 return LinearProgressIndicator(
                   minHeight: 10,
                   backgroundColor: const Color(0xff2039ce),
-                  color: color,
+                  color: _color.value,
                   value: _controller.value,
                 );
               }),
