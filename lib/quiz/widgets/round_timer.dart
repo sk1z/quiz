@@ -37,9 +37,8 @@ class RoundTimer extends StatefulWidget {
 
 class _RoundTimerState extends State<RoundTimer>
     with SingleTickerProviderStateMixin {
-  static final Animatable<double> _fadeIntervalTween =
-      CurveTween(curve: const Interval(0, 0.25));
-  static final Animatable<double> _fadeTween = Tween<double>(begin: 1, end: 0);
+  static final Animatable<double> _fadeTween = Tween<double>(begin: 1, end: 0)
+      .chain(CurveTween(curve: const Interval(0, 0.25)));
   static final Animatable<double> _appeareTween =
       CurveTween(curve: const Interval(0.44, 1));
   static final Animatable<Color?> _colorTween = TweenSequence<Color?>([
@@ -61,7 +60,7 @@ class _RoundTimerState extends State<RoundTimer>
   @override
   void initState() {
     super.initState();
-    _fade = widget.animation.drive(_fadeTween.chain(_fadeIntervalTween));
+    _fade = widget.animation.drive(_fadeTween);
     _appear = widget.animation.drive(_appeareTween);
 
     _controller = AnimationController(

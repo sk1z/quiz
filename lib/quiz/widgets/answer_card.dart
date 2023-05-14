@@ -34,9 +34,8 @@ class _AnswerCardState extends State<AnswerCard>
   bool _tapActive = false;
   bool _tapCanceled = false;
 
-  static final Animatable<double> _slideIntervalTween =
+  static final Animatable<double> _slideTween =
       CurveTween(curve: const Interval(0.44, 1, curve: Curves.easeOut));
-  late Animatable<Offset> _slideTween;
   static final Animatable<double> _scaleTween =
       Tween<double>(begin: 1, end: 0.9);
 
@@ -51,11 +50,11 @@ class _AnswerCardState extends State<AnswerCard>
     final bool isOdd = widget.number % 2 != 0;
     final int shift = isOdd ? -1 : 1;
 
-    _slideTween = Tween<Offset>(
+    final Animatable<Offset> slideTween = Tween<Offset>(
       begin: Offset(shift + shift * widget.horizontalPadding / widget.width, 0),
       end: Offset.zero,
-    );
-    _slide = widget.animation.drive(_slideTween.chain(_slideIntervalTween));
+    ).chain(_slideTween);
+    _slide = widget.animation.drive(slideTween);
 
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 250),

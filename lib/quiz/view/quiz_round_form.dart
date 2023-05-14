@@ -26,10 +26,9 @@ class _QuizRoundFormState extends State<QuizRoundForm>
   late int answer;
   bool animateTimer = true;
 
-  static final Animatable<double> _opacityIntervalTween =
-      CurveTween(curve: const Interval(0, 0.26));
   static final Animatable<double> _opacityTween =
-      Tween<double>(begin: 1, end: 0);
+      Tween<double>(begin: 1, end: 0)
+          .chain(CurveTween(curve: const Interval(0, 0.26)));
 
   late AnimationController _controller;
   late Animation<double> _opacity;
@@ -45,7 +44,7 @@ class _QuizRoundFormState extends State<QuizRoundForm>
         AnimationController(value: 1, duration: animationTime, vsync: this)
           ..addListener(_animationValueChanged)
           ..addStatusListener(_animationStatusChanged);
-    _opacity = _controller.drive(_opacityTween.chain(_opacityIntervalTween));
+    _opacity = _controller.drive(_opacityTween);
   }
 
   @override

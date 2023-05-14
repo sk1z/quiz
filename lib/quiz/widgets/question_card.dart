@@ -4,38 +4,68 @@ import 'package:flutter/material.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
 class QuestionCard extends StatelessWidget {
-  const QuestionCard(
-      {super.key, required this.question, required this.animation});
+  QuestionCard({super.key, required this.question, required this.animation}) {
+    _oldAngle = animation.drive(_oldAngleTween);
+    _coverAngle = animation.drive(_coverAngleTween);
+    _newAngle = animation.drive(_newAngleTween);
+
+    _coverScale = animation.drive(_coverScaleTween);
+    _scale = animation.drive(_scaleTween);
+
+    _coverOffset = animation.drive(_coverOffsetTween);
+    _offset = animation.drive(_offsetTween);
+  }
 
   final int question;
   final Animation<double> animation;
 
   static final Animatable<double> _disappearanceTween =
       CurveTween(curve: const Interval(0, 0.25));
-  static final Animatable<double> _coverAngleIntervalTween =
-      CurveTween(curve: const Interval(0.44, 0.7));
-  static final Animatable<double> _newAngleIntervalTween =
-      CurveTween(curve: const Interval(0.7, 1));
 
   static final Animatable<double> _oldAngleTween = Tween<double>(
     begin: 0,
     end: math.pi / 12.0,
-  );
+  ).chain(_disappearanceTween);
   static final Animatable<double> _coverAngleTween = Tween<double>(
     begin: 0,
     end: math.pi * 0.5,
-  );
+  ).chain(CurveTween(curve: const Interval(0.44, 0.7)));
   static final Animatable<double> _newAngleTween = Tween<double>(
     begin: math.pi * -0.5,
     end: 0,
-  );
+  ).chain(CurveTween(curve: const Interval(0.7, 1)));
 
-  static final Animatable<double> _oldAngle =
-      _oldAngleTween.chain(_disappearanceTween);
-  static final Animatable<double> _coverAngle =
-      _coverAngleTween.chain(_coverAngleIntervalTween);
-  static final Animatable<double> _newAngle =
-      _newAngleTween.chain(_newAngleIntervalTween);
+  static final Animatable<double> _coverScaleTween = TweenSequence<double>([
+    TweenSequenceItem(
+      weight: 0.44,
+      tween: Tween<double>(begin: 0.9, end: 1)
+          .chain(CurveTween(curve: Curves.easeOut)),
+    ),
+    TweenSequenceItem(
+      weight: 0.26,
+      tween: Tween<double>(begin: 1, end: 0.8),
+    ),
+  ]).chain(CurveTween(curve: const Interval(0, 0.7)));
+  static final Animatable<double> _scaleTween = Tween<double>(
+          begin: 0.8, end: 1)
+      .chain(CurveTween(curve: const Interval(0.7, 1, curve: Curves.easeOut)));
+
+  static final Animatable<Offset> _coverOffsetTween = Tween<Offset>(
+    begin: Offset.zero,
+    end: Offset(0, 4),
+  ).chain(CurveTween(curve: const Interval(0.44, 0.7)));
+  static final Animatable<Offset> _offsetTween = Tween<Offset>(
+    begin: Offset(0, 4),
+    end: Offset.zero,
+  ).chain(CurveTween(curve: const Interval(0.7, 1, curve: Curves.easeOut)));
+
+  late final Animation<double> _oldAngle;
+  late final Animation<double> _coverAngle;
+  late final Animation<double> _newAngle;
+  late final Animation<double> _coverScale;
+  late final Animation<double> _scale;
+  late final Animation<Offset> _coverOffset;
+  late final Animation<Offset> _offset;
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +98,7 @@ class QuestionCard extends StatelessWidget {
     final Animatable<Offset> offsetTween = Tween<Offset>(
       begin: Offset.zero,
       end: Offset(screenWidth - 10, 0),
-    );
-    final Animatable<Offset> offset = offsetTween.chain(_disappearanceTween);
+    ).chain(_disappearanceTween);
 
     final Widget coverCard = Card(
       margin: const EdgeInsets.symmetric(horizontal: 18),
@@ -98,24 +127,38 @@ class QuestionCard extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return Stack(
           children: [
-            Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(_coverAngle.evaluate(animation)),
-              alignment: FractionalOffset.bottomCenter,
-              child: coverCard,
-            ),
-            Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(_newAngle.evaluate(animation)),
-              alignment: FractionalOffset.bottomCenter,
-              child: card,
+            Transform.translate(
+              offset: _coverOffset.value,
+              child: Transform.scale(
+                alignment: Alignment.bottomCenter,
+                scale: _coverScale.value,
+                child: Transform(
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(_coverAngle.value),
+                  alignment: FractionalOffset.bottomCenter,
+                  child: coverCard,
+                ),
+              ),
             ),
             Transform.translate(
-              offset: offset.evaluate(animation),
+              offset: _offset.value,
+              child: Transform.scale(
+                alignment: Alignment.bottomCenter,
+                scale: _scale.value,
+                child: Transform(
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(_newAngle.value),
+                  alignment: FractionalOffset.bottomCenter,
+                  child: card,
+                ),
+              ),
+            ),
+            Transform.translate(
+              offset: offsetTween.evaluate(animation),
               child: Transform.rotate(
-                angle: _oldAngle.evaluate(animation),
+                angle: _oldAngle.value,
                 child: card,
               ),
             ),
