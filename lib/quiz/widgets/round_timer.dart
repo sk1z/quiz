@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_game/quiz/quiz.dart';
 
 const List<Color> _colors = const [
   Color(0xffdd3e37),
@@ -19,28 +18,33 @@ const List<Color> _colors = const [
   Color(0xff0aeb6f),
 ];
 
-class RoundTimer extends StatefulWidget {
-  const RoundTimer({
+class RoundTimer extends StatelessWidget {
+  RoundTimer({
     super.key,
-    required this.round,
-    this.animate = true,
-    required this.animation,
-  });
+    required Animation<double> animation,
+    required this.timeAnimation,
+  }) {
+    _opacity = animation.drive(_opacityTween);
+    _color = timeAnimation.drive(_colorTween);
+  }
 
-  final int round;
-  final bool animate;
-  final Animation animation;
+  final Animation<double> timeAnimation;
 
-  @override
-  State<RoundTimer> createState() => _RoundTimerState();
-}
-
-class _RoundTimerState extends State<RoundTimer>
-    with SingleTickerProviderStateMixin {
-  static final Animatable<double> _fadeTween = Tween<double>(begin: 1, end: 0)
-      .chain(CurveTween(curve: const Interval(0, 0.25)));
-  static final Animatable<double> _appeareTween =
-      CurveTween(curve: const Interval(0.44, 1));
+  static final Animatable<double> _opacityTween = TweenSequence<double>([
+    TweenSequenceItem(
+      weight: 0.26,
+      tween: Tween<double>(begin: 1, end: 0),
+    ),
+    TweenSequenceItem(
+      weight: 0.18,
+      tween: Tween<double>(begin: 0, end: 0),
+    ),
+    TweenSequenceItem(
+      weight: 0.56,
+      tween: Tween<double>(begin: 0, end: 1)
+          .chain(CurveTween(curve: Curves.easeOut)),
+    ),
+  ]);
   static final Animatable<Color?> _colorTween = TweenSequence<Color?>([
     for (int i = 0; i < _colors.length - 1; i++)
       TweenSequenceItem(
@@ -52,67 +56,25 @@ class _RoundTimerState extends State<RoundTimer>
       ),
   ]);
 
-  late Animation<double> _fade;
-  late Animation<double> _appear;
-  late AnimationController _controller;
-  late Animation<Color?> _color;
-
-  @override
-  void initState() {
-    super.initState();
-    _fade = widget.animation.drive(_fadeTween);
-    _appear = widget.animation.drive(_appeareTween);
-
-    _controller = AnimationController(
-      value: 1,
-      duration: answerTime,
-      vsync: this,
-    );
-    _color = _controller.drive(_colorTween);
-
-    if (widget.animate) {
-      _controller.reverse();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant RoundTimer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.animate) {
-      _controller.reverse();
-    } else {
-      _controller.stop();
-    }
-    if (widget.round != oldWidget.round) {
-      _controller.value = 1;
-    }
-  }
+  late final Animation<double> _opacity;
+  late final Animation<Color?> _color;
 
   @override
   Widget build(BuildContext context) {
-    final Animation<double> opacity =
-        widget.animation.value < 0.44 ? _fade : _appear;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 36),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: FadeTransition(
-          opacity: opacity,
+          opacity: _opacity,
           child: AnimatedBuilder(
-              animation: _controller,
+              animation: timeAnimation,
               builder: (BuildContext context, Widget? child) {
                 return LinearProgressIndicator(
                   minHeight: 10,
                   backgroundColor: const Color(0xff2039ce),
                   color: _color.value,
-                  value: _controller.value,
+                  value: timeAnimation.value,
                 );
               }),
         ),

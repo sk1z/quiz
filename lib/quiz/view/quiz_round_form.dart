@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
 class QuizRoundForm extends StatefulWidget {
@@ -8,63 +9,89 @@ class QuizRoundForm extends StatefulWidget {
     required this.question,
     required this.score,
     required this.answer,
+    required this.count,
   });
 
   final int round;
   final int question;
   final int score;
   final int answer;
+  final int count;
 
   @override
   State<QuizRoundForm> createState() => _QuizRoundFormState();
 }
 
 class _QuizRoundFormState extends State<QuizRoundForm>
-    with SingleTickerProviderStateMixin {
-  late int round;
-  late int question;
-  late int answer;
-  bool animateTimer = true;
+    with TickerProviderStateMixin {
+  late int _round;
+  late int _question;
+  late int _answer;
 
   static final Animatable<double> _opacityTween =
       Tween<double>(begin: 1, end: 0)
           .chain(CurveTween(curve: const Interval(0, 0.26)));
 
-  late AnimationController _controller;
-  late Animation<double> _opacity;
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+  late final AnimationController _timeController;
+
+  ModalRoute<Object?>? _route;
 
   @override
   void initState() {
     super.initState();
-    round = widget.round;
-    question = widget.question;
-    answer = widget.answer;
+    _round = widget.round;
+    _question = widget.question;
+    _answer = widget.answer;
 
-    _controller =
-        AnimationController(value: 1, duration: animationTime, vsync: this)
-          ..addListener(_animationValueChanged)
-          ..addStatusListener(_animationStatusChanged);
+    _controller = AnimationController(
+      value: 1,
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )
+      ..addListener(_animationValueChanged)
+      ..addStatusListener(_animationStatusChanged);
     _opacity = _controller.drive(_opacityTween);
+
+    _timeController = AnimationController(
+      value: 1,
+      duration: const Duration(seconds: 15),
+      vsync: this,
+    )..addStatusListener(_timeAnimationStatusChanged);
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     _controller.dispose();
+    _timeController.dispose();
+    _route?.animation?.removeStatusListener(_routeAnimationStatusChanged);
     super.dispose();
   }
 
   void _animationValueChanged() {
-    if (_controller.value < 0.44 || round == widget.round) return;
-    round = widget.round;
-    question = widget.question;
-    answer = widget.answer;
+    if (_controller.value < 0.44 || _round == widget.round) return;
+    _round = widget.round;
+    _question = widget.question;
+    _answer = widget.answer;
     setState(() {});
+    _timeController.value = 1;
   }
 
   void _animationStatusChanged(AnimationStatus status) {
     if (status != AnimationStatus.completed) return;
-    animateTimer = true;
-    setState(() {});
+    _timeController.reverse();
+  }
+
+  void _timeAnimationStatusChanged(AnimationStatus status) {
+    if (status != AnimationStatus.dismissed) return;
+    context.read<QuizBloc>().add(TimeOver());
+  }
+
+  void _routeAnimationStatusChanged(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    _timeController.reverse();
+    _route?.animation?.removeStatusListener(_routeAnimationStatusChanged);
   }
 
   @override
@@ -76,15 +103,24 @@ class _QuizRoundFormState extends State<QuizRoundForm>
         ..forward();
     }
     if (widget.round == oldWidget.round && widget.answer != oldWidget.answer) {
-      answer = widget.answer;
-      animateTimer = false;
+      _answer = widget.answer;
       setState(() {});
+      _timeController.stop();
     }
   }
 
   @override
+  void reassemble() {
+    context.read<QuizBloc>().add(TimeOver());
+    super.reassemble();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
+    _route ??= ModalRoute.of(context)
+      ?..animation?.addStatusListener(_routeAnimationStatusChanged);
+
+    final Widget child = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 18),
@@ -106,32 +142,32 @@ class _QuizRoundFormState extends State<QuizRoundForm>
             Expanded(
               child: Align(
                 alignment: Alignment.centerRight,
-                child: RoundScore(text: '$round/$questionCount', width: 75),
+                child: RoundScore(text: '$_round/${widget.count}', width: 75),
               ),
             ),
             const SizedBox(width: 18),
           ],
         ),
         const SizedBox(height: 24),
-        QuestionCard(question: question, animation: _controller),
+        QuestionCard(question: _question, animation: _controller),
         const SizedBox(height: 18),
-        RoundTimer(
-          round: round,
-          animate: animateTimer,
-          animation: _controller,
-        ),
+        RoundTimer(animation: _controller, timeAnimation: _timeController),
         const SizedBox(height: 20),
         Expanded(child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             final Widget answerColumn = AnswerGrid(
-              question: question,
-              answer: answer,
+              question: _question,
+              answer: _answer,
               maxWidth: constraints.maxWidth,
               maxHeight: constraints.maxHeight,
               animation: _controller,
+              onTap: (int number) {
+                if (!_timeController.isAnimating) return;
+                context.read<QuizBloc>().add(AnswerSelected(number));
+              },
             );
 
-            if (round == widget.round) return answerColumn;
+            if (_round == widget.round) return answerColumn;
 
             return FadeTransition(
               opacity: _opacity,
@@ -143,6 +179,17 @@ class _QuizRoundFormState extends State<QuizRoundForm>
         ContinueButton(show: widget.answer != 0),
         const SizedBox(height: 24),
       ],
+    );
+
+    return BlocListener<QuizBloc, QuizState>(
+      listenWhen: (QuizState previous, QuizState current) =>
+          previous.round != current.round,
+      listener: (BuildContext context, QuizState state) {
+        if (state.round < 0) {
+          _timeController.stop();
+        }
+      },
+      child: child,
     );
   }
 }

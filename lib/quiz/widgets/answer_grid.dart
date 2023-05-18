@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
 class AnswerGrid extends StatelessWidget {
@@ -10,6 +9,7 @@ class AnswerGrid extends StatelessWidget {
     required this.maxWidth,
     required this.maxHeight,
     required this.animation,
+    this.onTap,
   });
 
   final int question;
@@ -17,6 +17,7 @@ class AnswerGrid extends StatelessWidget {
   final double maxWidth;
   final double maxHeight;
   final Animation<double> animation;
+  final void Function(int number)? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +33,7 @@ class AnswerGrid extends StatelessWidget {
 
     final List<Widget> children = question.answers.map((Answer answer) {
       return AnswerCard(
-        onTap: () {
-          context.read<QuizBloc>().add(AnswerSelected(answer.number));
-        },
+        onTap: () => onTap?.call(answer.number),
         type: question.type,
         answer: answer.answer,
         selectedAnswer: this.answer,

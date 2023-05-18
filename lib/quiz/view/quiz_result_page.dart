@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_game/quiz/quiz.dart';
 
 class QuizResultPage extends StatelessWidget {
-  const QuizResultPage({super.key, required this.score});
+  const QuizResultPage({super.key, required this.score, required this.count});
 
   final int score;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class QuizResultPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const ResultScore(text: 'SCORE'),
-              ResultScore(text: '$score / $questionCount'),
+              ResultScore(text: '$score / $count'),
               const SizedBox(height: 36),
               ElevatedButton(
                 onPressed: () {

@@ -8,12 +8,14 @@ class QuizRoundPage extends StatelessWidget {
     required this.question,
     required this.score,
     required this.answer,
+    required this.count,
   });
 
   final int round;
   final int question;
   final int score;
   final int answer;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class QuizRoundPage extends StatelessWidget {
           question: question,
           score: score,
           answer: answer,
+          count: count,
         ),
       ),
     );

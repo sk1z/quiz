@@ -36,10 +36,12 @@ class Quiz extends StatelessWidget {
         path: '/question/:round',
         builder: (BuildContext context, GoRouterState state) {
           return QuizRoundPage(
+            key: state.pageKey,
             round: int.parse(state.params['round']!),
             question: int.parse(state.queryParams['question']!),
             score: int.parse(state.queryParams['score']!),
             answer: int.parse(state.queryParams['answer']!),
+            count: int.parse(state.queryParams['count']!),
           );
         },
       ),
@@ -48,6 +50,7 @@ class Quiz extends StatelessWidget {
         builder: (BuildContext context, GoRouterState state) {
           return QuizResultPage(
             score: int.parse(state.queryParams['score']!),
+            count: int.parse(state.queryParams['count']!),
           );
         },
       ),
@@ -60,9 +63,12 @@ class Quiz extends StatelessWidget {
         return '/question/${state.round + 1}'
             '?question=${state.questions[state.round]}'
             '&score=${state.score}'
-            '&answer=${state.answer}';
+            '&answer=${state.answer}'
+            '&count=${state.questions.length}';
       }
-      return '/result?score=${state.score}';
+      return '/result'
+          '?score=${state.score}'
+          '&count=${state.questions.length}';
     },
     refreshListenable: _quizState,
   );

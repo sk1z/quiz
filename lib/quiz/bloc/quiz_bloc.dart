@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
@@ -8,31 +7,34 @@ import 'package:quiz_game/quiz/quiz.dart';
 part 'quiz_event.dart';
 part 'quiz_state.dart';
 
-const int questionCount = 20;
-const Duration answerTime = Duration(seconds: 15);
-const Duration animationTime = Duration(milliseconds: 1000);
-
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   QuizBloc() : super(const QuizState()) {
     on<StartGamePressed>(_startGamePressed);
     on<AnswerSelected>(_onAnswerSelected);
+    on<ContinuePressed>(_continuePressed);
     on<TimeOver>(_timeOver);
     on<RestartPressed>(_restartPressed);
-    on<ContinuePressed>(_continuePressed);
   }
 
-  Timer? _timer;
-
   void _startGamePressed(StartGamePressed event, Emitter<QuizState> emit) {
-    // quizQuestions.removeWhere(
-    //     (Question question) => question.type == QuestionType.image);
-
-    final int count = min(questionCount, quizQuestions.length);
-
     final List<int> numbers = [
       for (int i = 0; i < quizQuestions.length; i++) i
     ];
     final List<int> questions = [];
+
+    // numbers.removeWhere((int number) {
+    //   return quizQuestions[number].type == QuestionType.image;
+    // });
+
+    // numbers.removeWhere((int number) {
+    //   final String question = quizQuestions[number].question;
+
+    //   return !question.contains('Carlsen') &&
+    //       !question.contains('Moon') &&
+    //       !question.contains('Jordan');
+    // });
+
+    final int count = min(20, numbers.length);
 
     final Random random = Random();
     for (int i = 0; i < count; i++) {
@@ -41,7 +43,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
       numbers.removeAt(number);
     }
 
-    _setTimer();
+    // questions.sort();
 
     emit(QuizState(
       round: 0,
@@ -50,8 +52,6 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   }
 
   void _onAnswerSelected(AnswerSelected event, Emitter<QuizState> emit) {
-    _timer?.cancel();
-
     final int answer = event.answer;
 
     int score = state.score;
@@ -71,9 +71,6 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     if (round < state.questions.length - 1) {
       round++;
-      Future.delayed(animationTime, () {
-        _setTimer();
-      });
     } else {
       round = -2;
     }
@@ -85,7 +82,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   }
 
   void _timeOver(TimeOver event, Emitter<QuizState> emit) {
-    _timer?.cancel();
+    if (state.round < 0) return;
 
     int answer = state.answer;
 
@@ -97,20 +94,6 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   }
 
   void _restartPressed(RestartPressed event, Emitter<QuizState> emit) {
-    _timer?.cancel();
-
     emit(state.copyWith(round: -1));
-  }
-
-  void _setTimer() {
-    _timer = Timer(answerTime, () {
-      add(TimeOver());
-    });
-  }
-
-  @override
-  Future<void> close() {
-    _timer?.cancel();
-    return super.close();
   }
 }
